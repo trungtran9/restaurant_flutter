@@ -22,6 +22,7 @@ import 'package:responsive_grid/responsive_grid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import '../../../ui/layout/loading.dart';
 
 class TablePage extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class TablePage extends StatefulWidget {
 class _TablePageState extends State<TablePage> {
   List<Dashboard> _dashboard = <Dashboard>[];
   num companyId = 0;
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -87,7 +89,16 @@ class _TablePageState extends State<TablePage> {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
 
-    
+    isLoading
+        ? Future.delayed(Duration(seconds: 5), () {
+            // Data loading complete
+            setState(() {
+              isLoading = false;
+            });
+            print('loading true');
+            // Proceed with displaying the loaded data or performing other tasks
+          })
+        : '';
 
     return Scaffold(
         appBar: new AppBar(
@@ -100,50 +111,52 @@ class _TablePageState extends State<TablePage> {
           actions: <Widget>[_rightTopSearchIcon()],
         ),
         drawer: AppDrawer(),
-        body: new DefaultTabController(
-          length: _allArea.length,
-          child: new Scaffold(
-            appBar: new AppBar(
-              //actions: <Widget>[],
-              automaticallyImplyLeading: false,
-              title: new TabBar(
-                // tabs: [
-                //   new Tab(icon: new Icon(Icons.directions_car)),
-                //   new Tab(icon: new Icon(Icons.directions_transit)),
-                //   new Tab(icon: new Icon(Icons.directions_bike)),
-                // ],
-                
-                isScrollable: true,
-                tabs: List<Widget>.generate(_allArea.length, (int index) {
-                  return new Tab(
-                    //icon: Icon(Icons.directions_car),
-                    text: _allArea[index].name.toString(),
-                  );
-                }),
-                indicatorColor: Colors.white,
-              ),
-            ),
-            body: _area.areaList.length != 0
-                ? new TabBarView(
-                    children:
-                        List<Widget>.generate(_allArea.length, (int index) {
-                      //return new Text("again some random text");
-                      return _tableListRender(_allArea[index].id);
-                    }),
-                  )
-                : new TabBarView(
-                    children: [
-                      //new Icon(Icons.directions_car,size: 50.0,),
-                      //new Icon(Icons.directions_transit,size: 50.0,),
-                      Container(
-                          height: 100,
-                          margin: const EdgeInsets.all(10.0),
-                          child: Center(child: CircularProgressIndicator())),
-                    ],
-              ),
-          ),
-        )
-      );
+        body: isLoading
+            ? MyLoading()
+            : new DefaultTabController(
+                length: _allArea.length,
+                child: new Scaffold(
+                  appBar: new AppBar(
+                    //actions: <Widget>[],
+                    automaticallyImplyLeading: false,
+                    title: new TabBar(
+                      // tabs: [
+                      //   new Tab(icon: new Icon(Icons.directions_car)),
+                      //   new Tab(icon: new Icon(Icons.directions_transit)),
+                      //   new Tab(icon: new Icon(Icons.directions_bike)),
+                      // ],
+
+                      isScrollable: true,
+                      tabs: List<Widget>.generate(_allArea.length, (int index) {
+                        return new Tab(
+                          //icon: Icon(Icons.directions_car),
+                          text: _allArea[index].name.toString(),
+                        );
+                      }),
+                      indicatorColor: Colors.white,
+                    ),
+                  ),
+                  body: _area.areaList.length != 0
+                      ? new TabBarView(
+                          children: List<Widget>.generate(_allArea.length,
+                              (int index) {
+                            //return new Text("again some random text");
+                            return _tableListRender(_allArea[index].id);
+                          }),
+                        )
+                      : new TabBarView(
+                          children: [
+                            //new Icon(Icons.directions_car,size: 50.0,),
+                            //new Icon(Icons.directions_transit,size: 50.0,),
+                            Container(
+                                height: 100,
+                                margin: const EdgeInsets.all(10.0),
+                                child:
+                                    Center(child: CircularProgressIndicator())),
+                          ],
+                        ),
+                ),
+              ));
   }
 
   Widget _tableListRender(num areaId) {
