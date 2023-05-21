@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 import '../../data/models/auth.dart';
 import '../../utils/popUp.dart';
 import 'newaccount.dart';
-// import 'forgot.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({this.username = ''});
@@ -62,6 +62,15 @@ class LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  _launchURL() async {
+    const url = 'https://app.aiapos.vn/';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -230,6 +239,39 @@ class LoginPageState extends State<LoginPage> {
                       child: Container(
                         margin: EdgeInsets.only(left: 0.0, right: 8.0),
                         child: MaterialButton(
+                          onPressed: _launchURL,
+                          color: Colors.blue,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    child: Icon(
+                                      Icons.signal_cellular_alt_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      "Quản lý",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Container(
+                        margin: EdgeInsets.only(left: 8.0, right: 0.0),
+                        child: MaterialButton(
+                          // minWidth: double.infinity,
                           onPressed: () {
                             final form = formKey.currentState!;
                             if (form.validate()) {
@@ -274,39 +316,6 @@ class LoginPageState extends State<LoginPage> {
                               });
                             }
                           },
-                          color: Colors.blue,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Container(
-                                    child: Icon(
-                                      Icons.signal_cellular_alt_rounded,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Text(
-                                      "Quản lý",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Container(
-                        margin: EdgeInsets.only(left: 8.0, right: 0.0),
-                        child: MaterialButton(
-                          // minWidth: double.infinity,
-                          onPressed: () {},
                           color: Colors.green,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,

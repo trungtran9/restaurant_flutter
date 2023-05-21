@@ -65,6 +65,8 @@ dependencies:
   ping_discover_network_forked: ^0.0.1
   printing: ^5.10.3
   pdf: ^3.10.1
+  flutter_spinkit: ^5.2.0
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:
@@ -123,5 +125,6 @@ flutter:
     - assets/images/
     - assets/images/logotp.png
     - assets/images/logo2.png
+    - assets/images/logo_aiapos.png
     - assets/images/table.jpg
     - CHANGELOG.md

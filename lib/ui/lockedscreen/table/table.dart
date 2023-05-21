@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_login/data/classes/area.dart';
 import 'package:flutter_login/data/classes/dashboard.dart';
+import 'package:flutter_login/data/classes/table.dart' as tb;
 import 'package:flutter_login/data/models/api.dart';
 import 'package:flutter_login/data/models/area.dart';
 import 'package:flutter_login/data/models/auth.dart';
@@ -79,7 +80,7 @@ class _TablePageState extends State<TablePage> {
     final _allTable = Provider.of<AppAPI>(context, listen: true);
     var _allArea = _area.areaList;
     _allArea.insert(0, new Area(id: 0, name: 'Tất cả'));
-
+    // print(_allArea);
     // if(_theme.type.toString() == 'ThemeType.dark')
     //   bgWhite = new Color(0xFF8f9499);
     // else if(_theme.type.toString() == 'ThemeType.black')
@@ -102,14 +103,27 @@ class _TablePageState extends State<TablePage> {
 
     return Scaffold(
         appBar: new AppBar(
-          centerTitle: true,
-          title: Text(
-            "Danh sách phòng bàn",
-            textScaleFactor: textScaleFactor,
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[_rightTopSearchIcon()],
-        ),
+            centerTitle: true,
+            title: Text(
+              "Danh sách phòng bàn",
+              textScaleFactor: textScaleFactor,
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              //_rightTopSearchIcon(id)
+              IconButton(
+                onPressed: () {
+                  // method to show the search bar
+                  showSearch(
+                    context: context,
+                    // delegate to customize the search bar
+                    delegate: CustomSearchDelegate(),
+                    //query: id.toString()
+                  );
+                },
+                icon: const Icon(Icons.search),
+              )
+            ]),
         drawer: AppDrawer(),
         body: isLoading
             ? MyLoading()
@@ -167,7 +181,7 @@ class _TablePageState extends State<TablePage> {
         child: Center(child: CircularProgressIndicator()),
       );
     } else {
-      if (areaId == 0)
+      if (areaId == 0) {
         return GridView.count(
             primary: false,
             shrinkWrap: true,
@@ -193,11 +207,10 @@ class _TablePageState extends State<TablePage> {
                       areaId: areaId,
                     ))
                 .toList());
-      else {
+      } else {
         // Iterable _newTblList = _tbl.tableList.where((i) => i.areaId);
         Iterable _newTblList =
             _tbl.tableList.where((item) => item.areaId == areaId);
-        //print(_newTblList);
         return GridView.count(
             primary: false,
             shrinkWrap: true,
@@ -227,5 +240,105 @@ class _TablePageState extends State<TablePage> {
 
   Widget _rightTopSearchIcon() {
     return Container();
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate<String> {
+  // Demo list to show querying
+  final id;
+  CustomSearchDelegate({this.id});
+  List<String> searchTerms = [
+    "Apple",
+    "Banana",
+    "Mango",
+    "Pear",
+    "Watermelons",
+    "Blueberries",
+    "Pineapples",
+    "Strawberries"
+  ];
+
+  // first overwrite to
+  // clear the search text
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: Icon(Icons.clear),
+      ),
+    ];
+  }
+
+  // second overwrite to pop out of search menu
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, id.toString());
+      },
+      icon: Icon(Icons.arrow_back),
+    );
+  }
+
+  // third overwrite to show query result
+  @override
+  Widget buildResults(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(fruit);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(result),
+          onTap: () {
+            //Go to the next screen with Navigator.push
+          },
+        );
+      },
+    );
+  }
+
+  // last overwrite to show the
+  // querying process at the runtime
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final _tbl = Provider.of<TableModel>(context, listen: true);
+    print('_tbl.tableList');
+    print(_tbl.tableList);
+
+    List<tb.Table> matchQuery = [];
+    for (var p in _tbl.tableList) {
+      if (p.tableName!.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(p);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(result.tableName!),
+          onTap: () {
+            //Go to the next screen with Navigator.push
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TableViewPage(
+                  tableId: result.id,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
