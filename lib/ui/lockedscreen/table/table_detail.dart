@@ -397,9 +397,9 @@ class _TableDetailPageState extends State<TableDetailPage> {
             var product = products[index];
             var img = (product.image != "" || product.image != null)
                 ? (apiHomeURL +
-                    '/public/templates/uploads/' +
+                    'public/templates/uploads/' +
                     product.image.toString())
-                : (apiHomeURL + '/public/templates/uploads/no_image.jpg');
+                : (apiHomeURL + 'public/templates/uploads/no_image.jpg');
   
             var checkOrder = (listOrder != null &&
                     listOrder.length > 0 &&

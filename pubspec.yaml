@@ -58,7 +58,7 @@ dependencies:
   tiengviet: ^0.5.0
   #native_widgets:
   json_serializable: ^6.2.0
-  dropdown_button2: ^1.8.8
+  dropdown_button2: ^2.1.2
   # esc_pos_utils: ^1.1.0
   change_app_package_name: ^1.1.0
   # wifi: ^0.1.5

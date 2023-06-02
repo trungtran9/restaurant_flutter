@@ -47,6 +47,17 @@ class _TableViewPageState extends State<TableViewPage> {
   List<Dashboard> _dashboard = <Dashboard>[];
     num companyId = 0;
   @override
+   String? selectedValue;
+   final List<String> items = [
+    'Item1',
+    'Item2',
+    'Item3',
+    'Item4',
+    'Item5',
+    'Item6',
+    'Item7',
+    'Item8',
+  ];
   void initState() {
      
     // TODO: implement initState
@@ -85,6 +96,7 @@ class _TableViewPageState extends State<TableViewPage> {
   Widget build(BuildContext context) {
     //print(widget.tableId);
     //final _product = Provider.of<ProductModel>(context);
+    print(companyId);
     var width = MediaQuery.of(context).size.width;
     final _tblDetail = Provider.of<TableDetailModel>(context);
     
@@ -103,7 +115,9 @@ class _TableViewPageState extends State<TableViewPage> {
             textAlign: TextAlign.center,
           ),
           actions: <Widget>[
+            
             //_rightTopSearchIcon(id)
+
             Center(
               child: DropdownButtonHideUnderline(
                 child: DropdownButton2(
@@ -112,11 +126,15 @@ class _TableViewPageState extends State<TableViewPage> {
                     size: 46,
                     color: Colors.white,
                   ),
-                  customItemsHeights: [
+                  menuItemStyleData: MenuItemStyleData(
+                  customHeights: [
                     ...List<double>.filled(MenuItems.firstItems.length, 48),
                     8,
-                   // ...List<double>.filled(MenuItems.secondItems.length, 48),
+                   
                   ],
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                ),
+
                   items: [
                     ...MenuItems.firstItems.map(
                       (item) => DropdownMenuItem<MenuItem>(
@@ -126,26 +144,31 @@ class _TableViewPageState extends State<TableViewPage> {
                     ),
                     const DropdownMenuItem<Divider>(
                         enabled: false, child: Divider()),
-                    // ...MenuItems.secondItems.map(
-                    //   (item) => DropdownMenuItem<MenuItem>(
-                    //     value: item,
-                    //     child: MenuItems.buildItem(item),
-                    //   ),
-                    // ),
+                   
                   ],
                   onChanged: (value) {
                     MenuItems.onChanged(context, value as MenuItem, widget.tableId, _tblDetail.productList);
                   },
-                  itemHeight: 48,
-                  itemPadding: const EdgeInsets.only(left: 16, right: 16),
-                  dropdownWidth: 160,
-                  dropdownPadding: const EdgeInsets.symmetric(vertical: 6),
-                  dropdownDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.blue,
+                  dropdownStyleData: DropdownStyleData(
+                    width: 160,
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.redAccent,
+                    ),
+                    elevation: 8,
+                    offset: const Offset(0, 8),
                   ),
-                  dropdownElevation: 8,
-                  offset: const Offset(0, 8),
+                  // itemHeight: 48,
+                  // itemPadding: const EdgeInsets.only(left: 16, right: 16),
+                  // dropdownWidth: 160,
+                  // dropdownPadding: const EdgeInsets.symmetric(vertical: 6),
+                  // dropdownDecoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(4),
+                  //   color: Colors.blue,
+                  // ),
+                  // dropdownElevation: 8,
+                  // offset: const Offset(0, 8),
                 ),
               ),
             ),
@@ -274,6 +297,7 @@ class _TableViewPageState extends State<TableViewPage> {
                                             _tblDetail.getTableName.toString(),
                                         areaName:
                                             _tblDetail.getAreaName.toString(),
+                                        companyId: companyId
                                       )));
                         },
                         child: new Row(
