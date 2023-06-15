@@ -11,8 +11,7 @@ import '../../widgets/custom_widget.dart';
 import '../../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import '../../../constants.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -218,15 +217,15 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            // new Icon(Icons.replay, color: Color(0xFFFFFFFF),),
-                            // new Text(list.length.toString(), style: TextStyle(color: Color(0xFFFFFFFF)),),
-                            // Badge(
+                            //new Icon(Icons.replay, color: Color(0xFFFFFFFF),),
+                            //new Text(listOrder.length.toString(), style: TextStyle(color: Color(0xFFFFFFFF)),),
+                            badges.Badge(
                               
-                            //   badgeContent: Text(totals.toString(),
-                            //       style: TextStyle(color: Color(0xFFFFFFFF))),
-                            //   child: Icon(Icons.shopping_cart,
-                            //       color: Color(0xFFFFFFFF)),
-                            // )
+                              badgeContent: Text(totals.toString(),
+                                  style: TextStyle(color: Color(0xFFFFFFFF))),
+                              child: Icon(Icons.shopping_cart,
+                                  color: Color(0xFFFFFFFF)),
+                            )
                           ],
                         ),
                       ),

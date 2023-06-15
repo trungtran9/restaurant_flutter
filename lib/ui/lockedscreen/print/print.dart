@@ -15,16 +15,16 @@ import 'package:flutter_login/ui/lockedscreen/print/edit_print.dart';
 import 'package:flutter_login/ui/lockedscreen/table/table_view.dart';
 import 'package:flutter_login/utils/popUp.dart';
 import 'package:provider/provider.dart';
-// import 'package:esc_pos_printer/esc_pos_printer.dart';
-// import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:esc_pos_printer/esc_pos_printer.dart';
+import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'dart:convert';
 import 'package:charset_converter/charset_converter.dart';
 import 'package:tiengviet/tiengviet.dart';
 // import 'package:ping_discover_network/ping_discover_network.dart';
 // import 'package:wifi/wifi.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+// import 'package:pdf/pdf.dart';
+// import 'package:pdf/widgets.dart' as pw;
+// import 'package:printing/printing.dart';
 import 'package:dropdown_button2/src/dropdown_button2.dart';
 
 class PrintPage extends StatefulWidget {
@@ -90,7 +90,7 @@ class _PrintPageState extends State<PrintPage> {
     }
 
     // Create a new instance of the printer
-    //printerManager = PrinterNetworkManager();
+    // printerManager = PrinterNetworkManager();
     
     
     // // Connect to the printer
@@ -244,6 +244,9 @@ class _PrintPageState extends State<PrintPage> {
                             ],
                           ),
                         );
+                        
+                        printD();
+                        
                         //_scaffoldKey.currentState.showSnackBar(snackbar);
 
                         // printNotify(
@@ -320,6 +323,7 @@ class _PrintPageState extends State<PrintPage> {
                             //     widget.tableId,
                             //     _productToPrint,
                             //     num.parse(_myActivity));
+                            printD();
                           },
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -699,23 +703,23 @@ class _PrintPageState extends State<PrintPage> {
   }
 
   void printD() async {
-    // const PaperSize paper = PaperSize.mm80;
-    // final profile = await CapabilityProfile.load();
-    // final printer = NetworkPrinter(paper, profile);
-    // print(printer);
-    // try{
-    // final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
-    // print(res);
-    // if (res == PosPrintResult.success) {
-    //   testReceipt(printer);
-    //  printer.disconnect();
-    // } 
-    //  testReceipt(printer);
-    // }
-    //  catch (e) {    
-    //     print(e);
-    //     // do stuff
-    // }  
+    const PaperSize paper = PaperSize.mm80;
+    final profile = await CapabilityProfile.load();
+    final printer = NetworkPrinter(paper, profile);
+    print(printer);
+    try{
+    final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
+    print(res);
+    if (res == PosPrintResult.success) {
+      testReceipt(printer);
+     printer.disconnect();
+    } 
+     testReceipt(printer);
+    }
+     catch (e) {    
+        print(e);
+        // do stuff
+    }  
     // final String ip = await Wifi.ip;
     // final String subnet = ip.substring(0, ip.lastIndexOf('.'));
     // final int port = 80;
@@ -731,70 +735,35 @@ class _PrintPageState extends State<PrintPage> {
    
   }
 
-  Future<void> _printDocument3(BuildContext context) async {
-    final doc = pw.Document();
+  
 
-    doc.addPage(pw.Page(
-      pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) {
-        return pw.Center(
-          child: pw.Text('Hello World!'),
-        );
-      },
-    ));
-
-    await Printing.layoutPdf(onLayout: (_) => doc.save());
+  
+  void testReceipt(NetworkPrinter printer) {
+    printer.text(
+          'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+    printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+        styles: PosStyles(codeTable: 'CP1252'));
+    printer.text('Special 2: blåbærgrød',
+        styles: PosStyles(codeTable: 'CP1252'));
+  
+    printer.text('Bold text', styles: PosStyles(bold: true));
+    printer.text('Reverse text', styles: PosStyles(reverse: true));
+    printer.text('Underlined text',
+        styles: PosStyles(underline: true), linesAfter: 1);
+    printer.text('Align left', styles: PosStyles(align: PosAlign.left));
+    printer.text('Align center', styles: PosStyles(align: PosAlign.center));
+    printer.text('Align right',
+        styles: PosStyles(align: PosAlign.right), linesAfter: 1);
+  
+    printer.text('Text size 200%',
+        styles: PosStyles(
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
+        ));
+  
+    printer.feed(2);
+    printer.cut();
   }
-
-  /// This method takes a page format and generates the Pdf file data
-  Future<Uint8List> buildPdf(PdfPageFormat format) async {
-    // Create the Pdf document
-    final pw.Document doc = pw.Document();
-
-    // Add one page with centered text "Hello World"
-    doc.addPage(
-      pw.Page(
-        pageFormat: format,
-        build: (pw.Context context) {
-          return pw.ConstrainedBox(
-            constraints: pw.BoxConstraints.expand(),
-            child: pw.FittedBox(
-              child: pw.Text('Hello World'),
-            ),
-          );
-        },
-      ),
-    );
-
-    // Build and return the final Pdf file data
-    return await doc.save();
-  }
-  // void testReceipt(NetworkPrinter printer) {
-  //   printer.text(
-  //         'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
-  //   printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
-  //       styles: PosStyles(codeTable: 'CP1252'));
-  //   printer.text('Special 2: blåbærgrød',
-  //       styles: PosStyles(codeTable: 'CP1252'));
-  
-  //   printer.text('Bold text', styles: PosStyles(bold: true));
-  //   printer.text('Reverse text', styles: PosStyles(reverse: true));
-  //   printer.text('Underlined text',
-  //       styles: PosStyles(underline: true), linesAfter: 1);
-  //   printer.text('Align left', styles: PosStyles(align: PosAlign.left));
-  //   printer.text('Align center', styles: PosStyles(align: PosAlign.center));
-  //   printer.text('Align right',
-  //       styles: PosStyles(align: PosAlign.right), linesAfter: 1);
-  
-  //   printer.text('Text size 200%',
-  //       styles: PosStyles(
-  //         height: PosTextSize.size2,
-  //         width: PosTextSize.size2,
-  //       ));
-  
-  //   printer.feed(2);
-  //   printer.cut();
-  // }
 
   // void printNotifyWithIp(PrinterNetworkManager printerManager, num tableId,
   //     var printProduct) async {
