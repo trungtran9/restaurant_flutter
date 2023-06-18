@@ -24,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../ui/layout/loading.dart';
+import 'package:http/http.dart' as http;
 
 class TablePage extends StatefulWidget {
   @override
@@ -33,20 +34,50 @@ class TablePage extends StatefulWidget {
 }
 
 class _TablePageState extends State<TablePage> {
+  ScrollController _scrollController = ScrollController();
   List<Dashboard> _dashboard = <Dashboard>[];
   num companyId = 0;
   bool isLoading = true;
+  num categories = 0;
+  num pageId = 1;
+  List<dynamic> dataList = [];
+  List<dynamic> _dataList = [];
   @override
+  Future<void> fetchData(companyId, categories, pageId) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var userData = _prefs.getString("user_data") ?? "";
+    if (userData != "") {
+      Map<String, dynamic> data = jsonDecode(userData);
+      companyId = (data['companyId']);
+    }
+    if (categories != 0) {
+      final response = await http.get(Uri.parse(apiURLV2 +
+          '/table/tablesByArea?company_id=$companyId&page=$pageId&area_id=$categories'));
+      Iterable list = json.decode(response.body)['data'];
+      _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+    } else {
+      final response = await http.get(
+          Uri.parse(apiURLV2 + '/table/?company_id=$companyId&page=$pageId'));
+      Iterable list = json.decode(response.body);
+      _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+    }
+    setState(() {
+      print('data');
+      dataList = _dataList;
+    });
+  }
+
   void initState() {
     super.initState();
     listenForTables();
+    fetchData(companyId, categories, pageId);
     final _tbl = Provider.of<TableModel>(context, listen: false);
     _tbl.fetchTables();
     final _area = Provider.of<AreaModel>(context, listen: false);
     _area.fetchAreas();
     final _allTable = Provider.of<AppAPI>(context, listen: false);
     _allTable.getAllTablesByArea(0);
-    //print(widget.tableStatus);
+    _scrollController.addListener(_scrollListener);
   }
 
   void listenForTables() async {
@@ -68,23 +99,77 @@ class _TablePageState extends State<TablePage> {
     }
   }
 
+  void _scrollListener() async {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      List<tb.Table> _dataScroll = [];
+      print('scroll bottom');
+      // print(categories);
+      pageId = pageId + 1;
+      print('pageId $pageId');
+      if (categories != 0) {
+        final response = await http.get(Uri.parse(apiURLV2 +
+            '/table/tablesByArea?company_id=$companyId&page=$pageId&area_id=$categories'));
+        Iterable list = json.decode(response.body)['data'];
+        _dataScroll = list.map((model) => tb.Table.fromJson(model)).toList();
+      } else {
+        final response = await http.get(
+            Uri.parse(apiURLV2 + '/table/?company_id=$companyId&page=$pageId'));
+        Iterable list = json.decode(response.body);
+        _dataScroll = list.map((model) => tb.Table.fromJson(model)).toList();
+      }
+      setState(() {
+        print('_dataScroll');
+        dataList.addAll(_dataScroll);
+      });
+    }
+  }
+
+  void _handleTabTap(areaId) async {
+    // _tbl.fetchTables1(areaId);
+    // final _tbl = Provider.of<TableModel>(context, listen: false);
+    // _tbl.fetchTables();
+    categories = areaId;
+    pageId = 1;
+    if (categories != 0) {
+      final response = await http.get(Uri.parse(apiURLV2 +
+          '/table/tablesByArea?company_id=$companyId&page=$pageId&area_id=$categories'));
+      Iterable list = json.decode(response.body)['data'];
+      _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+    } else {
+      final response = await http.get(
+          Uri.parse(apiURLV2 + '/table/?company_id=$companyId&page=$pageId'));
+      Iterable list = json.decode(response.body);
+      _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+    }
+    setState(() {
+      print('data1data1data1data1');
+      print('categ $categories');
+      print('dataList $dataList');
+      print('companyId $companyId');
+      dataList = _dataList;
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final _auth = Provider.of<AuthModel>(context, listen: true);
     final _tbl = Provider.of<TableModel>(context, listen: true);
     final _area = Provider.of<AreaModel>(context);
-    //print(_area.areaList);
     //final _theme = Provider.of<ThemeModel>(context);
     Color bgWhite = new Color(0xFFFFFFFF);
     final companyId = AppAPI.getCompanyOfUser();
     final _allTable = Provider.of<AppAPI>(context, listen: true);
     var _allArea = _area.areaList;
     _allArea.insert(0, new Area(id: 0, name: 'Tất cả'));
-    // print(_allArea);
-    // if(_theme.type.toString() == 'ThemeType.dark')
-    //   bgWhite = new Color(0xFF8f9499);
-    // else if(_theme.type.toString() == 'ThemeType.black')
-    //   bgWhite = new Color(0xFF6e6868);
+
     timeago.setLocaleMessages('vi', timeago.ViMessages());
     var appBar = AppBar();
     double _width = MediaQuery.of(context).size.width;
@@ -139,7 +224,13 @@ class _TablePageState extends State<TablePage> {
                       //   new Tab(icon: new Icon(Icons.directions_transit)),
                       //   new Tab(icon: new Icon(Icons.directions_bike)),
                       // ],
-
+                      onTap: (index) {
+                        // Should not used it as it only called when tab options are clicked,
+                        // not when user swapped
+                        print('index');
+                        print(_allArea[index].id);
+                        _handleTabTap(_allArea[index].id);
+                      },
                       isScrollable: true,
                       tabs: List<Widget>.generate(_allArea.length, (int index) {
                         return new Tab(
@@ -174,8 +265,7 @@ class _TablePageState extends State<TablePage> {
   }
 
   Widget _tableListRender(num areaId) {
-    final _tbl = Provider.of<TableModel>(context, listen: true);
-    if (_tbl.tableList == null) {
+    if (dataList == null) {
       return Container(
         height: MediaQuery.of(context).size.height / 2,
         child: Center(child: CircularProgressIndicator()),
@@ -183,6 +273,7 @@ class _TablePageState extends State<TablePage> {
     } else {
       if (areaId == 0) {
         return GridView.count(
+            controller: _scrollController,
             primary: false,
             shrinkWrap: true,
             childAspectRatio: 1,
@@ -190,7 +281,7 @@ class _TablePageState extends State<TablePage> {
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 5.0,
             crossAxisCount: 2,
-            children: _tbl.tableList
+            children: dataList
                 .map<Widget>((i) => TableCard(
                       model: i,
                       onTap: () {
@@ -209,9 +300,9 @@ class _TablePageState extends State<TablePage> {
                 .toList());
       } else {
         // Iterable _newTblList = _tbl.tableList.where((i) => i.areaId);
-        Iterable _newTblList =
-            _tbl.tableList.where((item) => item.areaId == areaId);
+        Iterable _newTblList = dataList.where((item) => item.areaId == areaId);
         return GridView.count(
+            controller: _scrollController,
             primary: false,
             shrinkWrap: true,
             childAspectRatio: 1,
@@ -286,6 +377,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   // third overwrite to show query result
   @override
   Widget buildResults(BuildContext context) {
+    // _scrollController.addListener(_scrollListener);
     List<String> matchQuery = [];
     for (var fruit in searchTerms) {
       if (fruit.toLowerCase().contains(query.toLowerCase())) {
@@ -293,6 +385,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
       }
     }
     return ListView.builder(
+      // controller: _scrollController,
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index];
@@ -306,13 +399,11 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     );
   }
 
-  // last overwrite to show the
-  // querying process at the runtime
   @override
   Widget buildSuggestions(BuildContext context) {
     final _tbl = Provider.of<TableModel>(context, listen: true);
-    print('_tbl.tableList');
-    print(_tbl.tableList);
+    // print('_tbl.tableList');
+    // print(_tbl.tableList);
 
     List<tb.Table> matchQuery = [];
     for (var p in _tbl.tableList) {

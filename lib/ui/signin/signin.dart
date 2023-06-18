@@ -9,6 +9,7 @@ import '../../constants.dart';
 import '../../data/models/auth.dart';
 import '../../utils/popUp.dart';
 import 'newaccount.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({this.username = ''});
@@ -344,74 +345,6 @@ class LoginPageState extends State<LoginPage> {
                     ),
                   ]),
             ),
-            ListTile(
-                // title: TextButton(
-                //   child: Text(
-                //     'Đăng nhập',
-                //     textScaleFactor: textScaleFactor,
-                //     style: TextStyle(color: Colors.white),
-                //   ),
-                //   style: ElevatedButton.styleFrom(
-                //     primary: Colors.blue,
-                //     // fixedSize: Size(250, 50),
-                //   ),
-                //   //color: Colors.blue,
-                //   onPressed: () {
-                //     final form = formKey.currentState!;
-                //     if (form.validate()) {
-                //       //form.save();
-                //       final snackBar = SnackBar(
-                //         //duration: Duration(seconds: 30),
-                //         content: Row(
-                //           children: <Widget>[
-                //             CircularProgressIndicator(),
-                //             Text("  Logging In...")
-                //           ],
-                //         ),
-                //       );
-                //       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                //       setState(() => this._status = 'loading');
-                //       _auth
-                //           .login(
-                //         _controllerUsername.text.toString().toLowerCase().trim(),
-                //         _controllerPassword.text.toString().trim(),
-                //       )
-                //           .then((result) {
-                //         print(result);
-
-                //         if (result) {
-                //           Navigator.of(context).pushReplacementNamed('/home');
-                //         } else {
-                //           setState(() => this._status = 'rejected');
-                //           showAlertPopup(
-                //               context, 'Thông báo', _auth.errorMessage);
-                //         }
-                //         // if (!globals.isBioSetup) {
-                //         //   setState(() {
-                //         //     print('Bio No Longer Setup');
-                //         //   });
-                //         // }
-                //       });
-                //     }
-                //   },
-                // ),
-                // trailing: !globals.isBioSetup
-                //     ? null
-                //     : NativeButton(
-                //         child: Icon(
-                //           Icons.fingerprint,
-                //           color: Colors.white,
-                //         ),
-                //         color: Colors.redAccent[400],
-                //         onPressed: globals.isBioSetup
-                //             ? loginWithBio
-                //             : () {
-                //                 globals.Utility.showAlertPopup(context, 'Info',
-                //                     "Please Enable in Settings after you Login");
-                //               },
-                //       ),
-                ),
             // FlatButton(
             //   child: Text(
             //     'Need an Account?',
