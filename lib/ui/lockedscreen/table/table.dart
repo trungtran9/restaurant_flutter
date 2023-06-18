@@ -174,7 +174,6 @@ class _TablePageState extends State<TablePage> {
     var appBar = AppBar();
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
-
     isLoading
         ? Future.delayed(Duration(seconds: 5), () {
             // Data loading complete
@@ -202,7 +201,8 @@ class _TablePageState extends State<TablePage> {
                   showSearch(
                     context: context,
                     // delegate to customize the search bar
-                    delegate: CustomSearchDelegate(),
+                    delegate: CustomSearchDelegate(
+                        data: dataList, scroll: _scrollController),
                     //query: id.toString()
                   );
                 },
@@ -337,7 +337,10 @@ class _TablePageState extends State<TablePage> {
 class CustomSearchDelegate extends SearchDelegate<String> {
   // Demo list to show querying
   final id;
-  CustomSearchDelegate({this.id});
+  final List<dynamic>? data;
+  final scroll;
+
+  CustomSearchDelegate({this.data, this.id, this.scroll});
   List<String> searchTerms = [
     "Apple",
     "Banana",
@@ -377,7 +380,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   // third overwrite to show query result
   @override
   Widget buildResults(BuildContext context) {
-    // _scrollController.addListener(_scrollListener);
     List<String> matchQuery = [];
     for (var fruit in searchTerms) {
       if (fruit.toLowerCase().contains(query.toLowerCase())) {
@@ -385,7 +387,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
       }
     }
     return ListView.builder(
-      // controller: _scrollController,
+      controller: scroll,
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index];
@@ -401,12 +403,12 @@ class CustomSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final _tbl = Provider.of<TableModel>(context, listen: true);
+    // final _tbl = Provider.of<TableModel>(context, listen: true);
     // print('_tbl.tableList');
-    // print(_tbl.tableList);
+    // print(data);
 
     List<tb.Table> matchQuery = [];
-    for (var p in _tbl.tableList) {
+    for (var p in data!) {
       if (p.tableName!.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(p);
       }
