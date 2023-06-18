@@ -63,6 +63,7 @@ dependencies:
   change_app_package_name: ^1.1.0
   # wifi: ^0.1.5
   ping_discover_network_forked: ^0.0.1
+  fluttertoast: ^8.2.2
   # printing: ^5.10.3
   # pdf: ^3.10.1
 

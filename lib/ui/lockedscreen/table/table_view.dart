@@ -934,7 +934,7 @@ class _TableViewPageState extends State<TableViewPage> {
 // tam tinh
   showPreAlert(BuildContext context, tableId, products) {
      List text = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    final total = products.fold(0, (sum, item) => sum + item.price);
+    final total = products.fold(0, (sum, item) => sum + (item.price)*item.qty);
     print(total);
     var formatter = NumberFormat('#,###');
     

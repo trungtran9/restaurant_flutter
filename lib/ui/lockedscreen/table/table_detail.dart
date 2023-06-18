@@ -18,6 +18,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../../data/classes/category.dart' as cat;
 import '../../../data/models/category.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TableDetailPage extends StatefulWidget {
   @override
@@ -167,19 +168,39 @@ class _TableDetailPageState extends State<TableDetailPage> {
                             ),
                           );
                         
-                          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                          //ScaffoldMessenger.of(context).showSnackBar(snackbar);
                           _tblDetail.removeTempOrder(widget.id).then((result) {
                             if (result) {
+                               setState(() {
+                                listOrder = [];
+                                totals = 0;
+                              });
                             } else {
                         
-                              showAlertPopup(context, 'Thông báo', 'Lỗi');
+                              //showAlertPopup(context, 'Thông báo', 'Lỗi');
+                              Fluttertoast.showToast(
+                                  msg: "Lỗi",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
                             }
                            
-                            showAlertPopup(
-                                context, 'Thông báo', 'Hủy món thành công');
-                            setState(() {
-                              //listOrder = List();
-                            });
+                            // showAlertPopup(
+                            //     context, 'Thông báo', 'Hủy món thành công');
+                            Fluttertoast.showToast(
+                                  msg: "Hủy món thành công",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                           
                             //Navigator.of(context).pushReplacementNamed('/table-detail/' + tableId.toString());
                           });
                         },
@@ -566,10 +587,19 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                             ],
                                           ),
                                       );
-                                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                                      // ScaffoldMessenger.of(context).showSnackBar(snackbar);
                                       _tblDetail.addItem(widget.id, product.id, num.parse(_controllerQty[index].text), product.price).then((result){
                                         if (result)
-                                           showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
+                                          // showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
+                                          Fluttertoast.showToast(
+                                              msg: "Đặt món thành công",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.CENTER,
+                                              timeInSecForIosWeb: 1,
+                                              backgroundColor: Colors.red,
+                                              textColor: Colors.white,
+                                              fontSize: 16.0
+                                          );
                                         else
                                           showAlertPopup(context, 'Thông báo', 'Lỗi đặt món');
 

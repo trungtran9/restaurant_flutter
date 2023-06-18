@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../data/models/confirm_order.dart';
 import '../../utils/popUp.dart';
 import 'package:provider/provider.dart';
-
+import 'table/table_detail.dart';
 import '../../constants.dart';
 
 class ConfirmOrderPage extends StatefulWidget {
@@ -33,7 +33,18 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
       appBar: new AppBar(
         leading: new IconButton(
           icon: new Icon(Icons.arrow_back), 
-          onPressed: (){Navigator.of(context).pushNamed('/table-detail/${widget.tableId}');}
+          onPressed: (){
+            //Navigator.of(context).pushNamed('/table-detail/${widget.tableId}');
+            //Navigator.of(context).pushReplacementNamed('/table-detail/' + widget.tableId.toString());
+           Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (content) => TableDetailPage(
+                                id: widget.tableId,
+                              ),
+                            ),
+                          );
+          }
         ),
         centerTitle: true,
         title: Text(
