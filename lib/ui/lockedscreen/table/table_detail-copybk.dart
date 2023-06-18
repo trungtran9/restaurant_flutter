@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_login/data/classes/product.dart';
-import 'package:flutter_login/data/models/confirm_order.dart';
-import 'package:flutter_login/data/models/product.dart';
-import 'package:flutter_login/data/models/table_detail.dart';
-import 'package:flutter_login/ui/lockedscreen/confirm_order.dart';
-import 'package:flutter_login/ui/lockedscreen/product/product_detail.dart';
-import 'package:flutter_login/ui/lockedscreen/table/table_view.dart';
-import 'package:flutter_login/ui/widgets/custom_widget.dart';
-import 'package:flutter_login/utils/popUp.dart';
+import '../../../data/classes/product.dart';
+import '../../../data/models/confirm_order.dart';
+import '../../../data/models/product.dart';
+import '../../../data/models/table_detail.dart';
+import '../confirm_order.dart';
+import '../product/product_detail.dart';
+import 'table_view.dart';
+import '../../widgets/custom_widget.dart';
+import '../../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import '../../../constants.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 

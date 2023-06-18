@@ -1,12 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_login/data/classes/product.dart';
-import 'package:flutter_login/data/models/product.dart';
-import 'package:flutter_login/ui/common/api.dart';
-import 'package:flutter_login/ui/lockedscreen/table/table.dart';
-import 'package:flutter_login/ui/widgets/custom_widget.dart';
-import 'package:flutter_login/utils/popUp.dart';
+import '../../../data/classes/product.dart';
+import '../../../data/models/product.dart';
+import '../../common/api.dart';
+import '../table/table.dart';
+import '../../widgets/custom_widget.dart';
+import '../../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import '../../../constants.dart';
@@ -510,7 +510,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 //shape: BoxShape.circle,
                 image: new DecorationImage(
                   fit: BoxFit.cover,
-                  image: new CachedNetworkImageProvider(img),
+                  image: new NetworkImage(img),
                 ),
               ),
             ),

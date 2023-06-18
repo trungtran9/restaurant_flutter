@@ -11,14 +11,14 @@ import '../../widgets/custom_widget.dart';
 import '../../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import '../../../constants.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../../data/classes/category.dart' as cat;
 import '../../../data/models/category.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TableDetailPage extends StatefulWidget {
   @override
@@ -170,19 +170,37 @@ class _TableDetailPageState extends State<TableDetailPage> {
                               ],
                             ),
                           );
-
-                          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                          //ScaffoldMessenger.of(context).showSnackBar(snackbar);
                           _tblDetail.removeTempOrder(widget.id).then((result) {
                             if (result) {
+                               setState(() {
+                                listOrder = [];
+                                totals = 0;
+                              });
                             } else {
-                              showAlertPopup(context, 'Thông báo', 'Lỗi');
+                              //showAlertPopup(context, 'Thông báo', 'Lỗi');
+                              Fluttertoast.showToast(
+                                  msg: "Lỗi",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
                             }
-
-                            showAlertPopup(
-                                context, 'Thông báo', 'Hủy món thành công');
-                            setState(() {
-                              //listOrder = List();
-                            });
+                           
+                            // showAlertPopup(
+                            //     context, 'Thông báo', 'Hủy món thành công');
+                            Fluttertoast.showToast(
+                                  msg: "Hủy món thành công",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
                             //Navigator.of(context).pushReplacementNamed('/table-detail/' + tableId.toString());
                           });
                         },
@@ -220,15 +238,13 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            // new Icon(Icons.replay, color: Color(0xFFFFFFFF),),
-                            // new Text(list.length.toString(), style: TextStyle(color: Color(0xFFFFFFFF)),),
-                            // Badge(
-
-                            //   badgeContent: Text(totals.toString(),
-                            //       style: TextStyle(color: Color(0xFFFFFFFF))),
-                            //   child: Icon(Icons.shopping_cart,
-                            //       color: Color(0xFFFFFFFF)),
-                            // )
+                            badges.Badge(
+                              
+                              badgeContent: Text(totals.toString(),
+                                  style: TextStyle(color: Color(0xFFFFFFFF))),
+                              child: Icon(Icons.shopping_cart,
+                                  color: Color(0xFFFFFFFF)),
+                            )
                           ],
                         ),
                       ),
@@ -383,45 +399,34 @@ class _TableDetailPageState extends State<TableDetailPage> {
       // else {
       //   products =  products.where((item) => item.categoryId == categoryId).toList();
       // }
-
-      return ListView.builder(
-        //controller: _scrollController,
-        itemCount: products.length,
-        shrinkWrap: true,
-        physics: ClampingScrollPhysics(),
-        itemBuilder: (context, index) {
-          var product = products[index];
-          var img = (product.image != "" || product.image != null)
-              ? (apiHomeURL +
-                  '/public/templates/uploads/' +
-                  product.image.toString())
-              : (apiHomeURL + '/public/templates/uploads/no_image.jpg');
-
-          var checkOrder = (listOrder != null &&
-                  listOrder.length > 0 &&
-                  listOrder.contains(product.id)
-              ? 1
-              : 0);
-          return GestureDetector(
-            //onTap: () => {Navigator.of(context).pushNamed('/product/${i.id}')},
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductDetailPage(
-                    product: product,
-                    tableId: widget.id,
-                  ),
-                ),
-              );
-            },
-            child: checkOrder == 1
-                ? new Container(
-                    padding: EdgeInsets.all(6),
-                    //margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(width: 1.0, color: Colors.black12),
+        
+        return ListView.builder(
+          //controller: _scrollController,
+          itemCount: products.length,
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemBuilder: (context, index) {
+            var product = products[index];
+            var img = (product.image != "" || product.image != null)
+                ? (apiHomeURL +
+                    'public/templates/uploads/' +
+                    product.image.toString())
+                : (apiHomeURL + 'public/templates/uploads/no_image.jpg');
+  
+            var checkOrder = (listOrder != null &&
+                    listOrder.length > 0 &&
+                    listOrder.contains(product.id)
+                ? 1
+                : 0);
+            return GestureDetector(
+                //onTap: () => {Navigator.of(context).pushNamed('/product/${i.id}')},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(
+                        product: product,
+                        tableId: widget.id,
                       ),
                       //borderRadius: BorderRadius.circular(7),
                     ),
@@ -600,35 +605,35 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                       primary: Colors.blueGrey.shade900),
                                   onPressed: () {
                                     //saveData(index);
-                                    print(_controllerQty[index].text);
-                                    print(product.id);
+                                    print( _controllerQty[index].text);
+                                    print( product.id);
 
-                                    final snackbar = SnackBar(
-                                      duration: Duration(seconds: 4),
-                                      content: Row(
-                                        children: <Widget>[
-                                          CircularProgressIndicator(),
-                                          Text("  Đặt món...")
-                                        ],
-                                      ),
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackbar);
-                                    _tblDetail
-                                        .addItem(
-                                            widget.id,
-                                            product.id,
-                                            num.parse(
-                                                _controllerQty[index].text),
-                                            product.price)
-                                        .then((result) {
-                                      if (result)
-                                        showAlertPopup(context, 'Thông báo',
-                                            'Đặt món thành công');
-                                      else
-                                        showAlertPopup(context, 'Thông báo',
-                                            'Lỗi đặt món');
-                                    });
+                                      final snackbar = SnackBar(
+                                        duration: Duration(seconds: 4),
+                                          content: Row(
+                                            children: <Widget>[
+                                              CircularProgressIndicator(),
+                                              Text("  Đặt món...")
+                                            ],
+                                          ),
+                                      );
+                                      // ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                                      _tblDetail.addItem(widget.id, product.id, num.parse(_controllerQty[index].text), product.price).then((result){
+                                        if (result)
+                                          // showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
+                                          Fluttertoast.showToast(
+                                              msg: "Đặt món thành công",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.CENTER,
+                                              timeInSecForIosWeb: 1,
+                                              backgroundColor: Colors.red,
+                                              textColor: Colors.white,
+                                              fontSize: 16.0
+                                          );
+                                        else
+                                          showAlertPopup(context, 'Thông báo', 'Lỗi đặt món');
+
+                                      });
                                   },
                                   child: const Text('Thêm món')),
                             ))

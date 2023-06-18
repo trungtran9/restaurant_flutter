@@ -12,10 +12,14 @@ import 'package:provider/provider.dart';
 // import 'package:dropdown_formfield/dropdown_formfield.dart';
 // import 'package:esc_pos_printer/esc_pos_printer.dart';
 // import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter_login/data/classes/print.dart';
+import 'package:flutter_login/data/classes/select_print.dart';
+import 'package:dropdown_button2/src/dropdown_button2.dart';
 
 class EditPrintPage extends StatefulWidget {
-  EditPrintPage({required this.tableId});
+  EditPrintPage({required this.tableId, required this.companyId});
   final num tableId;
+  final num companyId;
   @override
   _EditPrintPageState createState() => _EditPrintPageState();
 }
@@ -23,23 +27,45 @@ class EditPrintPage extends StatefulWidget {
 class _EditPrintPageState extends State<EditPrintPage> {
   //final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
-      GlobalKey<ScaffoldMessengerState>();
-  String _myActivity = '';
-  String _myActivityResult = '';
-  //final PrinterNetworkManager printerManager = PrinterNetworkManager();
+    GlobalKey<ScaffoldMessengerState>();
+
+    //final PrinterNetworkManager printerManager = PrinterNetworkManager();
+
+    String _myActivity = '0';
+    String _myActivityResult = '';
+    List<Print> _newPrintList = [];
+    List<Print> _checkPrint = [];
+    List<SelectPrint> _selectPrint = [];
+    List<String> devices = [];
+    bool isDiscovering = false;
+    int found = -1;
+    bool isHistory = false;
+    final List<String> items = [];
+    String? selectedValue;
+    String? selectedValuePrint;
+  
+
   @override
   void initState() {
     // TODO: implement initState
     final _printOrder = Provider.of<ConfirmOrderModel>(context, listen: false);
     _printOrder.fetchPrintByTable(widget.tableId);
+
+    _printOrder.getPrint(widget.companyId);
     super.initState();
-    _myActivity = 'Running';
     _myActivityResult = '';
   }
 
   @override
   Widget build(BuildContext context) {
     final _printOrder = Provider.of<ConfirmOrderModel>(context);
+    if(_selectPrint.length > 0) {
+      _selectPrint.forEach((element) async {
+      
+      if(!items.contains(element.printName))
+        items.add(element.printName);
+      });
+    }
     return Scaffold(
         key: _scaffoldKey,
         //resizeToAvoidBottomPadding: false,
@@ -52,6 +78,7 @@ class _EditPrintPageState extends State<EditPrintPage> {
                   MaterialPageRoute(
                     builder: (context) => PrintPage(
                       tableId: widget.tableId,
+                      companyId: widget.companyId,
                     ),
                   ),
                 );
@@ -61,6 +88,101 @@ class _EditPrintPageState extends State<EditPrintPage> {
             'Chỉnh sửa báo bếp',
             textAlign: TextAlign.center,
           ),
+          actions: <Widget>[
+            
+            //_rightTopSearchIcon(id)
+            // TextButton(
+            //   style: TextButton.styleFrom(
+            //     primary: Colors.white,
+            //   ),
+            //   onPressed: () {
+            //     print('afe');
+            //   },
+            //   child: Text('TextButton'),
+            // )
+            Row(
+            children: [
+               Center(
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton2(
+                  isExpanded: true,
+                  customButton: const Icon(
+                    Icons.print,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                  items: items
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ))
+                      .toList(),
+                  value: selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedValue = value as String;
+                      
+                      print(selectedValue);
+                    });
+                  },
+                  buttonStyleData: ButtonStyleData(
+                    height: 50,
+                    width: 160,
+                    padding: const EdgeInsets.only(left: 14, right: 14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.black26,
+                      ),
+                      color: Colors.redAccent,
+                    ),
+                    elevation: 2,
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.arrow_forward_ios_outlined,
+                    ),
+                    iconSize: 14,
+                    iconEnabledColor: Colors.yellow,
+                    iconDisabledColor: Colors.grey,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    width: 200,
+                    padding: null,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: Colors.redAccent,
+                    ),
+                    elevation: 8,
+                    offset: const Offset(-20, 0),
+                    scrollbarTheme: ScrollbarThemeData(
+                      radius: const Radius.circular(40),
+                      thickness: MaterialStateProperty.all<double>(6),
+                      thumbVisibility: MaterialStateProperty.all<bool>(true),
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 40,
+                    padding: EdgeInsets.only(left: 14, right: 14),
+                  ),
+                ),
+              ),
+            ),
+            ],
+          )
+           
+            
+
+          ],
         ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.lightBlueAccent,
@@ -174,63 +296,8 @@ class _EditPrintPageState extends State<EditPrintPage> {
                                 ),
                               ),
                             ));
-                      }).toList()),
-                  //  Column(
-                  //    children: <Widget>[
-                  //     Container(
-                  //       padding: EdgeInsets.all(16),
-                  //       child: DropDownFormField(
-                  //         titleText: 'Chọn lịch sử',
-                  //         hintText: 'Please choose one',
-                  //         value: _myActivity,
-                  //         onSaved: (value) {
-                  //           setState(() {
-                  //             _myActivity = value;
-                  //           });
-                  //         },
-                  //         onChanged: (value) {
-                  //           setState(() {
-                  //             _myActivity = value;
-                  //             print(value);
-                  //           });
-                  //         },
-                  //         dataSource: [
-                  //           {
-                  //             "display": "Running",
-                  //             "value": "Running",
-                  //           },
-                  //           {
-                  //             "display": "Climbing",
-                  //             "value": "Climbing",
-                  //           },
-                  //           {
-                  //             "display": "Walking",
-                  //             "value": "Walking",
-                  //           },
-                  //           {
-                  //             "display": "Swimming",
-                  //             "value": "Swimming",
-                  //           },
-                  //           {
-                  //             "display": "Soccer Practice",
-                  //             "value": "Soccer Practice",
-                  //           },
-                  //           {
-                  //             "display": "Baseball Practice",
-                  //             "value": "Baseball Practice",
-                  //           },
-                  //           {
-                  //             "display": "Football Practice",
-                  //             "value": "Football Practice",
-                  //           },
-                  //         ],
-                  //         textField: 'display',
-                  //         valueField: 'value',
-                  //       ),
-                  //     )
-
-                  //    ],
-                  //  ),
+                    }).toList()),
+                  
                 ],
               ))
             : Container(

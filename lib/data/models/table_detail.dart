@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_login/data/classes/product.dart';
+import '../classes/product.dart';
 import 'package:local_auth/local_auth.dart';
 // import 'package:native_widgets/native_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -168,21 +168,37 @@ class TableDetailModel extends ChangeNotifier {
       companyId = (data['companyId']);
     }
     var note = '';
+     print("tableId:"  + tableId.toString());
+    print("productId" + productId.toString());
+    print("qty" + qty.toString());
+    print("price" + price.toString());
+    print("companyId" + companyId.toString());
+    
+    print(apiURLV2 + '/order/orderTempMenu');
+    try {
+      http.Response response = await http.post(
+        Uri.parse(apiURLV2 + '/order/orderTempMenu'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'table_id': tableId,
+          'product_id': productId,
+          'qty': qty,
+          'price': price,
+          'note': note,
+          'company_id': companyId
+        }),
+      );
+      
+    } catch (e) {
+      print(e);
+    }
     //await Future.delayed(Duration(seconds: 3));
-    http.Response response = await http.post(
-      Uri.parse(apiURLV2 + '/order/orderTempMenu'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, dynamic>{
-        'table_id': tableId,
-        'product_id': productId,
-        'qty': qty,
-        'price': price,
-        'note': note,
-        'company_id': companyId
-      }),
-    );
+    
+    //print(json.decode(response.body));
+
+   
     _totals += qty;
    
     notifyListeners();

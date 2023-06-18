@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/data/classes/option.dart';
 import 'package:flutter_login/data/classes/print.dart';
+import 'package:flutter_login/data/classes/select_print.dart';
 import 'package:flutter_login/data/models/confirm_order.dart';
 import 'package:flutter_login/data/models/print.dart';
 import 'package:flutter_login/data/models/table_detail.dart';
@@ -14,20 +15,22 @@ import 'package:flutter_login/ui/lockedscreen/print/edit_print.dart';
 import 'package:flutter_login/ui/lockedscreen/table/table_view.dart';
 import 'package:flutter_login/utils/popUp.dart';
 import 'package:provider/provider.dart';
-// import 'package:esc_pos_printer/esc_pos_printer.dart';
-// import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:esc_pos_printer/esc_pos_printer.dart';
+import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'dart:convert';
 import 'package:charset_converter/charset_converter.dart';
 import 'package:tiengviet/tiengviet.dart';
 // import 'package:ping_discover_network/ping_discover_network.dart';
 // import 'package:wifi/wifi.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+// import 'package:pdf/pdf.dart';
+// import 'package:pdf/widgets.dart' as pw;
+// import 'package:printing/printing.dart';
+import 'package:dropdown_button2/src/dropdown_button2.dart';
 
 class PrintPage extends StatefulWidget {
-  PrintPage({required this.tableId,  this.tableName,  this.areaName});
+  PrintPage({required this.tableId, required this.companyId, this.tableName,  this.areaName});
   final num tableId;
+  final num companyId;
   final String? tableName;
   final String? areaName;
   @override
@@ -41,22 +44,41 @@ class _PrintPageState extends State<PrintPage> {
   String _myActivityResult = '';
   List<Print> _newPrintList = [];
   List<Print> _checkPrint = [];
- List<String> devices = [];
+  List<SelectPrint> _selectPrint = [];
+  List<String> devices = [];
   bool isDiscovering = false;
+  String choosePrint = '';
   int found = -1;
   bool isHistory = false;
+  final List<String> items = [];
+  String? selectedValue;
+  String? selectedValuePrint;
   @override
   void initState() {
     // TODO: implement initState
     final _printOrder = Provider.of<ConfirmOrderModel>(context, listen: false);
     _printOrder.fetchPrintByTable(widget.tableId);
+    _printOrder.getPrint(widget.companyId);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final _printOrder = Provider.of<ConfirmOrderModel>(context);
-    print(_printOrder.productIncludePrint);
+    print('_printOrder.productIncludePrint');
+    print(countOrder((_printOrder.getNotify)));
+    _selectPrint = (_printOrder.printList);
+   
+    
+    if(_selectPrint.length > 0) {
+      _selectPrint.forEach((element) async {
+      
+      if(!items.contains(element.printName))
+        items.add(element.printName);
+      });
+    }
+    
+    print(items);
     var _productToPrint = _printOrder.productIncludePrint;
     if (_productToPrint != null) {
       // final _finalProductToPrint = _productToPrint.values.toList();
@@ -68,7 +90,7 @@ class _PrintPageState extends State<PrintPage> {
     }
 
     // Create a new instance of the printer
-    //printerManager = PrinterNetworkManager();
+    // printerManager = PrinterNetworkManager();
     
     
     // // Connect to the printer
@@ -92,7 +114,6 @@ class _PrintPageState extends State<PrintPage> {
           .where((item) => item.status == 0)
           .toList();
     final _print = Provider.of<PrintModel>(context);
-    //print(widget.areaName);
     return Scaffold(
       key: _scaffoldKey,
       //resizeToAvoidBottomPadding: false,
@@ -114,6 +135,90 @@ class _PrintPageState extends State<PrintPage> {
           'In báo bếp',
           textAlign: TextAlign.center,
         ),
+         actions: <Widget>[
+
+            Center(
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton2(
+                  isExpanded: true,
+                  customButton: const Icon(
+                    Icons.print,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                  items: items
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ))
+                      .toList(),
+                  value: selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedValue = value as String;
+                      
+                      print(selectedValue);
+                      _selectPrint.forEach((element) async {
+      
+                      if(selectedValue == (element.printName))
+                        choosePrint = (element.ip);
+                      });
+                      print(choosePrint);
+                    });
+                  },
+                  buttonStyleData: ButtonStyleData(
+                    height: 50,
+                    width: 160,
+                    padding: const EdgeInsets.only(left: 14, right: 14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.black26,
+                      ),
+                      color: Colors.redAccent,
+                    ),
+                    elevation: 2,
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.arrow_forward_ios_outlined,
+                    ),
+                    iconSize: 14,
+                    iconEnabledColor: Colors.yellow,
+                    iconDisabledColor: Colors.grey,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    width: 200,
+                    padding: null,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: Colors.redAccent,
+                    ),
+                    elevation: 8,
+                    offset: const Offset(-20, 0),
+                    scrollbarTheme: ScrollbarThemeData(
+                      radius: const Radius.circular(40),
+                      thickness: MaterialStateProperty.all<double>(6),
+                      thumbVisibility: MaterialStateProperty.all<bool>(true),
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 40,
+                    padding: EdgeInsets.only(left: 14, right: 14),
+                  ),
+                ),
+              ),
+            ),
+          ],
       ),
       bottomNavigationBar: _printOrder.productListPrint != null &&
               _checkPrint.length != 0 &&
@@ -139,6 +244,9 @@ class _PrintPageState extends State<PrintPage> {
                             ],
                           ),
                         );
+                        
+                        printD();
+                        
                         //_scaffoldKey.currentState.showSnackBar(snackbar);
 
                         // printNotify(
@@ -174,7 +282,7 @@ class _PrintPageState extends State<PrintPage> {
                   //       Navigator.push(
                   //         context,
                   //         MaterialPageRoute(
-                  //           builder: (context) => EditPrintPage(tableId: widget.tableId,),
+                  //           builder: (context) => EditPrintPage(tableId: widget.tableId, companyId: widget.tableId),
                   //         ),
                   //       );
                   //     },
@@ -215,6 +323,7 @@ class _PrintPageState extends State<PrintPage> {
                             //     widget.tableId,
                             //     _productToPrint,
                             //     num.parse(_myActivity));
+                            printD();
                           },
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -304,6 +413,57 @@ class _PrintPageState extends State<PrintPage> {
                         children: <Widget>[
                           Container(
                             padding: EdgeInsets.all(16),
+                            child:Center(
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton2(
+                                  hint: Text(
+                                    'Chọn lịch sử',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                  ),
+                                  items: countOrder((_printOrder.getNotify))
+                                          .map((item) => DropdownMenuItem<String>(
+                                    value:  (item + 1).toString(),
+                                    child: Text(
+                                      'Chọn món lần ' + (item + 1).toString(),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ))
+                                          .toList(),
+                                  value: selectedValuePrint,
+                                  onChanged: (value) {
+
+                                    setState(() {
+
+                                    _myActivity = value ?? '0'; 
+
+                                    selectedValuePrint = _myActivity;
+
+                                      _newPrintList = _printOrder.productListPrint
+                                          .where((item) =>
+                                              item.printCount == num.parse(_myActivity))
+                                          .toList();
+                                      if (num.parse(_myActivity) != 0)
+                                        isHistory = true;
+                                      else
+                                        isHistory = false;
+                                      print(isHistory);
+                                    });
+                                  },
+                                  buttonStyleData: const ButtonStyleData(
+                                    height: 40,
+                                    width: 140,
+                                  ),
+                                  menuItemStyleData: const MenuItemStyleData(
+                                    height: 40,
+                                  ),
+                                ),
+                              ),
+                            ),
                             // child: DropDownFormField(
                             //   titleText: 'Chọn lịch sử',
                             //   hintText: 'Chỉnh sửa gọi món',
@@ -340,23 +500,23 @@ class _PrintPageState extends State<PrintPage> {
                           Container(
                             height: 0,
                           ),
-                          TextButton(
-                            style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                            ),
-                            onPressed: () { 
-                              //printD(); 
-                              Printing.layoutPdf(
-                                // [onLayout] will be called multiple times
-                                // when the user changes the printer or printer settings
-                                onLayout: (PdfPageFormat format) {
-                                  // Any valid Pdf document can be returned here as a list of int
-                                  return buildPdf(format);
-                                },
-                              );
-                            },
-                            child: Text('TextButton'),
-                          ),
+                          // TextButton(
+                          //   style: ButtonStyle(
+                          //     foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                          //   ),
+                          //   onPressed: () { 
+                          //     //printD(); 
+                          //     Printing.layoutPdf(
+                          //       // [onLayout] will be called multiple times
+                          //       // when the user changes the printer or printer settings
+                          //       onLayout: (PdfPageFormat format) {
+                          //         // Any valid Pdf document can be returned here as a list of int
+                          //         return buildPdf(format);
+                          //       },
+                          //     );
+                          //   },
+                          //   child: Text('TextButton'),
+                          // ),
                         ],
                       ),
               ],
@@ -366,6 +526,63 @@ class _PrintPageState extends State<PrintPage> {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.all(16),
+                      child:Center(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton2(
+                              hint: Text(
+                                'Chọn lịch sử gọi món',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).hintColor,
+                                ),
+                              ),
+                              items: countOrder(_printOrder.getNotify)
+                                      .map((item) => DropdownMenuItem<String>(
+                                value:  (item + 1).toString(),
+                                child: Text(
+                                  'Chọn món lần ' + (item + 1).toString(),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ))
+                                      .toList(),
+                              value: selectedValuePrint,
+                              onChanged: (value) {
+                                // setState(() {
+                                //   selectedValuePrint = value as String;
+                                // });
+                                
+                                setState(() {
+                                  // selectedValuePrint = value as String ?? '0';
+                                  // if(selectedValuePrint != '0')
+                                  
+                                  //     _myActivity = selectedValuePrint;
+                                  // else
+                                  //   _myActivity = '0';
+                                   _myActivity = value ?? '0'; 
+                                   selectedValuePrint = _myActivity;
+                                  _newPrintList = _printOrder.productListPrint
+                                      .where((item) =>
+                                          item.printCount == num.parse(_myActivity))
+                                      .toList();
+                                  if (num.parse(_myActivity) != 0)
+                                    isHistory = true;
+                                  else
+                                    isHistory = false;
+                                  print(isHistory);
+                                });
+                              },
+                              buttonStyleData: const ButtonStyleData(
+                                height: 40,
+                                width: 140,
+                              ),
+                              menuItemStyleData: const MenuItemStyleData(
+                                height: 40,
+                              ),
+                            ),
+                          ),
+                        ),
 
                       // child: DropDownFormField(
                       //   titleText: 'Chọn lịch sử',
@@ -486,23 +703,23 @@ class _PrintPageState extends State<PrintPage> {
   }
 
   void printD() async {
-    // const PaperSize paper = PaperSize.mm80;
-    // final profile = await CapabilityProfile.load();
-    // final printer = NetworkPrinter(paper, profile);
-    // print(printer);
-    // try{
-    // final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
-    // print(res);
-    // if (res == PosPrintResult.success) {
-    //   testReceipt(printer);
-    //  printer.disconnect();
-    // } 
-    //  testReceipt(printer);
-    // }
-    //  catch (e) {    
-    //     print(e);
-    //     // do stuff
-    // }  
+    const PaperSize paper = PaperSize.mm80;
+    final profile = await CapabilityProfile.load();
+    final printer = NetworkPrinter(paper, profile);
+    print(printer);
+    try{
+    final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
+    print(res);
+    if (res == PosPrintResult.success) {
+      testReceipt(printer);
+     printer.disconnect();
+    } 
+     testReceipt(printer);
+    }
+     catch (e) {    
+        print(e);
+        // do stuff
+    }  
     // final String ip = await Wifi.ip;
     // final String subnet = ip.substring(0, ip.lastIndexOf('.'));
     // final int port = 80;
@@ -518,70 +735,35 @@ class _PrintPageState extends State<PrintPage> {
    
   }
 
-  Future<void> _printDocument3(BuildContext context) async {
-    final doc = pw.Document();
+  
 
-    doc.addPage(pw.Page(
-      pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) {
-        return pw.Center(
-          child: pw.Text('Hello World!'),
-        );
-      },
-    ));
-
-    await Printing.layoutPdf(onLayout: (_) => doc.save());
+  
+  void testReceipt(NetworkPrinter printer) {
+    printer.text(
+          'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+    printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+        styles: PosStyles(codeTable: 'CP1252'));
+    printer.text('Special 2: blåbærgrød',
+        styles: PosStyles(codeTable: 'CP1252'));
+  
+    printer.text('Bold text', styles: PosStyles(bold: true));
+    printer.text('Reverse text', styles: PosStyles(reverse: true));
+    printer.text('Underlined text',
+        styles: PosStyles(underline: true), linesAfter: 1);
+    printer.text('Align left', styles: PosStyles(align: PosAlign.left));
+    printer.text('Align center', styles: PosStyles(align: PosAlign.center));
+    printer.text('Align right',
+        styles: PosStyles(align: PosAlign.right), linesAfter: 1);
+  
+    printer.text('Text size 200%',
+        styles: PosStyles(
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
+        ));
+  
+    printer.feed(2);
+    printer.cut();
   }
-
-  /// This method takes a page format and generates the Pdf file data
-  Future<Uint8List> buildPdf(PdfPageFormat format) async {
-    // Create the Pdf document
-    final pw.Document doc = pw.Document();
-
-    // Add one page with centered text "Hello World"
-    doc.addPage(
-      pw.Page(
-        pageFormat: format,
-        build: (pw.Context context) {
-          return pw.ConstrainedBox(
-            constraints: pw.BoxConstraints.expand(),
-            child: pw.FittedBox(
-              child: pw.Text('Hello World'),
-            ),
-          );
-        },
-      ),
-    );
-
-    // Build and return the final Pdf file data
-    return await doc.save();
-  }
-  // void testReceipt(NetworkPrinter printer) {
-  //   printer.text(
-  //         'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
-  //   printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
-  //       styles: PosStyles(codeTable: 'CP1252'));
-  //   printer.text('Special 2: blåbærgrød',
-  //       styles: PosStyles(codeTable: 'CP1252'));
-  
-  //   printer.text('Bold text', styles: PosStyles(bold: true));
-  //   printer.text('Reverse text', styles: PosStyles(reverse: true));
-  //   printer.text('Underlined text',
-  //       styles: PosStyles(underline: true), linesAfter: 1);
-  //   printer.text('Align left', styles: PosStyles(align: PosAlign.left));
-  //   printer.text('Align center', styles: PosStyles(align: PosAlign.center));
-  //   printer.text('Align right',
-  //       styles: PosStyles(align: PosAlign.right), linesAfter: 1);
-  
-  //   printer.text('Text size 200%',
-  //       styles: PosStyles(
-  //         height: PosTextSize.size2,
-  //         width: PosTextSize.size2,
-  //       ));
-  
-  //   printer.feed(2);
-  //   printer.cut();
-  // }
 
   // void printNotifyWithIp(PrinterNetworkManager printerManager, num tableId,
   //     var printProduct) async {
@@ -853,8 +1035,8 @@ class _PrintPageState extends State<PrintPage> {
   //   return ticket;
   // }
 
-  // show option
-  List<dynamic> showOption(num numberOption) {
+// show option
+List<dynamic> showOption(num numberOption) {
     //List<OptionSelect> options;
     var options = [];
     OptionSelect ob = OptionSelect(value: '0', display: 'Chỉnh sửa gọi món');
@@ -868,4 +1050,15 @@ class _PrintPageState extends State<PrintPage> {
       }
     return (options);
   }
+}
+
+// show new option
+List<dynamic> countOrder(num numberOption) {
+    var options = [];
+    //options.add(0);
+    if (numberOption != 0)
+      for (var i = 0; i < numberOption; i++) {
+        options.add(i);
+      }
+    return (options);
 }
