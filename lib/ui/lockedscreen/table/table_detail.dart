@@ -173,7 +173,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           //ScaffoldMessenger.of(context).showSnackBar(snackbar);
                           _tblDetail.removeTempOrder(widget.id).then((result) {
                             if (result) {
-                               setState(() {
+                              setState(() {
                                 listOrder = [];
                                 totals = 0;
                               });
@@ -186,21 +186,19 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                   timeInSecForIosWeb: 1,
                                   backgroundColor: Colors.red,
                                   textColor: Colors.white,
-                                  fontSize: 16.0
-                              );
+                                  fontSize: 16.0);
                             }
-                           
+
                             // showAlertPopup(
                             //     context, 'Thông báo', 'Hủy món thành công');
                             Fluttertoast.showToast(
-                                  msg: "Hủy món thành công",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0
-                              );
+                                msg: "Hủy món thành công",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
                             //Navigator.of(context).pushReplacementNamed('/table-detail/' + tableId.toString());
                           });
                         },
@@ -239,7 +237,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             badges.Badge(
-                              
                               badgeContent: Text(totals.toString(),
                                   style: TextStyle(color: Color(0xFFFFFFFF))),
                               child: Icon(Icons.shopping_cart,
@@ -399,39 +396,48 @@ class _TableDetailPageState extends State<TableDetailPage> {
       // else {
       //   products =  products.where((item) => item.categoryId == categoryId).toList();
       // }
-        
-        return ListView.builder(
-          //controller: _scrollController,
-          itemCount: products.length,
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
-          itemBuilder: (context, index) {
-            var product = products[index];
-            var img = (product.image != "" || product.image != null)
-                ? (apiHomeURL +
-                    'public/templates/uploads/' +
-                    product.image.toString())
-                : (apiHomeURL + 'public/templates/uploads/no_image.jpg');
-  
-            var checkOrder = (listOrder != null &&
-                    listOrder.length > 0 &&
-                    listOrder.contains(product.id)
-                ? 1
-                : 0);
-            return GestureDetector(
-                //onTap: () => {Navigator.of(context).pushNamed('/product/${i.id}')},
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductDetailPage(
-                        product: product,
-                        tableId: widget.id,
+
+      return ListView.builder(
+        //controller: _scrollController,
+        itemCount: products.length,
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        itemBuilder: (context, index) {
+          var product = products[index];
+          var img = (product.image != "" || product.image != null)
+              ? (apiHomeURL +
+                  'public/templates/uploads/' +
+                  product.image.toString())
+              : (apiHomeURL + 'public/templates/uploads/no_image.jpg');
+
+          var checkOrder = (listOrder != null &&
+                  listOrder.length > 0 &&
+                  listOrder.contains(product.id)
+              ? 1
+              : 0);
+          return GestureDetector(
+            //onTap: () => {Navigator.of(context).pushNamed('/product/${i.id}')},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailPage(
+                    product: product,
+                    tableId: widget.id,
+                  ),
+                ),
+              );
+            },
+            child: checkOrder == 1
+                ? new Container(
+                    padding: EdgeInsets.all(6),
+                    //margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(width: 1.0, color: Colors.black12),
                       ),
                       //borderRadius: BorderRadius.circular(7),
                     ),
-                    //child: Slidable(
-
                     child: ListTile(
                       leading: new Container(
                           width: 120.0,
@@ -605,35 +611,41 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                       primary: Colors.blueGrey.shade900),
                                   onPressed: () {
                                     //saveData(index);
-                                    print( _controllerQty[index].text);
-                                    print( product.id);
+                                    print(_controllerQty[index].text);
+                                    print(product.id);
 
-                                      final snackbar = SnackBar(
-                                        duration: Duration(seconds: 4),
-                                          content: Row(
-                                            children: <Widget>[
-                                              CircularProgressIndicator(),
-                                              Text("  Đặt món...")
-                                            ],
-                                          ),
-                                      );
-                                      // ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                                      _tblDetail.addItem(widget.id, product.id, num.parse(_controllerQty[index].text), product.price).then((result){
-                                        if (result)
-                                          // showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
-                                          Fluttertoast.showToast(
-                                              msg: "Đặt món thành công",
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.CENTER,
-                                              timeInSecForIosWeb: 1,
-                                              backgroundColor: Colors.red,
-                                              textColor: Colors.white,
-                                              fontSize: 16.0
-                                          );
-                                        else
-                                          showAlertPopup(context, 'Thông báo', 'Lỗi đặt món');
-
-                                      });
+                                    final snackbar = SnackBar(
+                                      duration: Duration(seconds: 4),
+                                      content: Row(
+                                        children: <Widget>[
+                                          CircularProgressIndicator(),
+                                          Text("  Đặt món...")
+                                        ],
+                                      ),
+                                    );
+                                    // ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                                    _tblDetail
+                                        .addItem(
+                                            widget.id,
+                                            product.id,
+                                            num.parse(
+                                                _controllerQty[index].text),
+                                            product.price)
+                                        .then((result) {
+                                      if (result)
+                                        // showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
+                                        Fluttertoast.showToast(
+                                            msg: "Đặt món thành công",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+                                      else
+                                        showAlertPopup(context, 'Thông báo',
+                                            'Lỗi đặt món');
+                                    });
                                   },
                                   child: const Text('Thêm món')),
                             ))
