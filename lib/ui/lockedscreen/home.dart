@@ -13,6 +13,7 @@ import '../../data/models/dashboard.dart';
 import '../app/app_drawer.dart';
 import '../../data/models/api.dart';
 import '../../data/classes/user_v2.dart';
+import '../../ui/layout/loading.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -24,6 +25,7 @@ class _HomeState extends State<Home> {
   //List user_data = [];
   num companyId = 0;
   List<UserV2> users = [];
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -70,6 +72,16 @@ class _HomeState extends State<Home> {
     var appBar = AppBar();
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
+    isLoading
+        ? Future.delayed(Duration(seconds: 5), () {
+            // Data loading complete
+            setState(() {
+              isLoading = false;
+            });
+            print('loading true');
+            // Proceed with displaying the loaded data or performing other tasks
+          })
+        : '';
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -150,75 +162,77 @@ class _HomeState extends State<Home> {
         //   ),
         // ),
 
-        body: Column(
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            //mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Column(
+        body: isLoading
+            ? MyLoading()
+            : Column(
+                //crossAxisAlignment: CrossAxisAlignment.start,
+                //mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  FittedBox(
-                    fit: BoxFit.fill, // otherwise the logo will be tiny
-                    child: Image.asset("assets/images/table.jpg",
-                        //width: 100, height: 100
-                        fit: BoxFit.cover,
-                        //fit: BoxFit.fill,
-                        width: _width,
-                        height: _height / 3),
-                  ),
-                ],
-              ),
-              Expanded(
-                flex: 1,
-                child: _dashboard.length > 0
-                    ? GridView.count(
-                        primary: false,
-                        childAspectRatio: 1.2,
-                        padding: const EdgeInsets.all(5.0),
-                        mainAxisSpacing: 5.0,
-                        crossAxisSpacing: 5.0,
-                        crossAxisCount: 2,
-                        children: _dashboard.map<Widget>((i) {
-                          //print(i.url.toString());
-                          return GestureDetector(
-                              // height: 100,
-                              // alignment: Alignment.center,
-                              // color: Colors.cyan,
-                              // onTap: onTap,
-                              onTap: () => Navigator.pushNamed(
-                                  context, i.url.toString()),
-                              child: Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.black12, width: 2),
-                                  color: Colors.cyan,
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                child: ListTile(
-                                  title: Text(
-                                    i.name.toString(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  subtitle: Text(
-                                    i.total.toString(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  // leading: Container(
-                                  //   margin: EdgeInsets.only(left: 6.0),
-                                  //   child: Image.network(_beer.image_url, height: 50.0, fit: BoxFit.fill,)
-                                  // ),
-                                  //onTap: () => Navigator.pushNamed(context, i.url.toString()),
-                                ),
-                              ));
-                        }).toList())
-                    : Center(
-                        child: Text(
-                          "Không tìm thấy bàn nào",
-                          textAlign: TextAlign.center,
+                    Column(
+                      children: <Widget>[
+                        FittedBox(
+                          fit: BoxFit.fill, // otherwise the logo will be tiny
+                          child: Image.asset("assets/images/table.jpg",
+                              //width: 100, height: 100
+                              fit: BoxFit.cover,
+                              //fit: BoxFit.fill,
+                              width: _width,
+                              height: _height / 3),
                         ),
-                      ),
-              )
-            ])
+                      ],
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: _dashboard.length > 0
+                          ? GridView.count(
+                              primary: false,
+                              childAspectRatio: 1.2,
+                              padding: const EdgeInsets.all(5.0),
+                              mainAxisSpacing: 5.0,
+                              crossAxisSpacing: 5.0,
+                              crossAxisCount: 2,
+                              children: _dashboard.map<Widget>((i) {
+                                //print(i.url.toString());
+                                return GestureDetector(
+                                    // height: 100,
+                                    // alignment: Alignment.center,
+                                    // color: Colors.cyan,
+                                    // onTap: onTap,
+                                    onTap: () => Navigator.pushNamed(
+                                        context, i.url.toString()),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.black12, width: 2),
+                                        color: Colors.cyan,
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: ListTile(
+                                        title: Text(
+                                          i.name.toString(),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        subtitle: Text(
+                                          i.total.toString(),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        // leading: Container(
+                                        //   margin: EdgeInsets.only(left: 6.0),
+                                        //   child: Image.network(_beer.image_url, height: 50.0, fit: BoxFit.fill,)
+                                        // ),
+                                        //onTap: () => Navigator.pushNamed(context, i.url.toString()),
+                                      ),
+                                    ));
+                              }).toList())
+                          : Center(
+                              child: Text(
+                                "Không tìm thấy bàn nào",
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                    )
+                  ])
         // body: ListView.builder(
         //   itemCount: users.length,
         //   itemBuilder: (context, index) {

@@ -31,6 +31,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List listOrder = [];
   num totalCart = 0;
+  num _itemCount = 0;
   var index = 0;
   late ScrollController _scrollController;
   // List<TextEditingController> _controllerQty = [];
@@ -43,9 +44,10 @@ class _TableDetailPageState extends State<TableDetailPage> {
   bool _isFirstLoadRunning = true;
   // Used to display loading indicators when _loadMore function is running
   bool _isLoadMoreRunning = false;
-  
+
   final List<TextEditingController> _controllerQty = [];
-  
+  // final List<int> _itemCount = [];
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +71,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
   createControllers(products) {
     for (var i = 0; i < products.length; i++) {
       _controllerQty.add(TextEditingController());
+      //_itemCount.add(i);
     }
   }
 
@@ -87,7 +90,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
     final id = widget.id;
     final _tblDetail = Provider.of<TableDetailModel>(context);
     final _product = Provider.of<ProductModel>(context);
-    
+
     createControllers(_product.productList);
 
     final _confirmProduct = Provider.of<ConfirmOrderModel>(context);
@@ -95,7 +98,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
     var _allCategories = _categories.categoryList;
     num totals = _tblDetail.totalCart;
     int count = 0;
-    
+
     Iterable lProducts = [];
     _allCategories.insert(0, new cat.Category(id: 0, name: 'Tất cả'));
 
@@ -167,7 +170,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
                               ],
                             ),
                           );
-                        
                           //ScaffoldMessenger.of(context).showSnackBar(snackbar);
                           _tblDetail.removeTempOrder(widget.id).then((result) {
                             if (result) {
@@ -176,7 +178,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                 totals = 0;
                               });
                             } else {
-                        
                               //showAlertPopup(context, 'Thông báo', 'Lỗi');
                               Fluttertoast.showToast(
                                   msg: "Lỗi",
@@ -200,7 +201,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                   textColor: Colors.white,
                                   fontSize: 16.0
                               );
-                           
                             //Navigator.of(context).pushReplacementNamed('/table-detail/' + tableId.toString());
                           });
                         },
@@ -238,8 +238,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            //new Icon(Icons.replay, color: Color(0xFFFFFFFF),),
-                            //new Text(listOrder.length.toString(), style: TextStyle(color: Color(0xFFFFFFFF)),),
                             badges.Badge(
                               
                               badgeContent: Text(totals.toString(),
@@ -255,109 +253,105 @@ class _TableDetailPageState extends State<TableDetailPage> {
                 ),
               )
             : Container(height: 0, color: Colors.white // This is optional
-              ),
+                ),
         // body: _product.productList.isNotEmpty
         //     ? _renderTableView(_product.productList, listOrder)
-            
+
         //     : Container(
         //         height: MediaQuery.of(context).size.height / 2,
         //         child: Center(child: CircularProgressIndicator()),
         //       )
         body: DefaultTabController(
-              //initialIndex: 1,
-              length: _allCategories.length,
-              child: Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                   title: Text(
-                    "Chọn món vào đơn",
-                    textScaleFactor: textScaleFactor,
-                    textAlign: TextAlign.center,
-                  ),
-                  actions: <Widget>[
-                  //_rightTopSearchIcon(id)
-                  IconButton(
-                    onPressed: () {
-                      // method to show the search bar
-                      showSearch(
-                        context: context,
-                        // delegate to customize the search bar
-                        delegate: CustomSearchDelegate(id: id),
-                        //query: id.toString()
-                      );
-                    },
-                    icon: const Icon(Icons.search),
-                  )
-                ],
-                  bottom: 
-                  new TabBar(
-                    // tabs: [
-                    //   new Tab(icon: new Icon(Icons.directions_car)),
-                    //   new Tab(icon: new Icon(Icons.directions_transit)),
-                    //   new Tab(icon: new Icon(Icons.directions_bike)),
-                    // ],
-                   // controller: _controllerTab,
-                    isScrollable: true,
-                    tabs: List<Widget>.generate(_allCategories.length, (int index) {
-                      return new Tab(
-                        //icon: Icon(Icons.android),
-                        text:     _allCategories[index].name.toString(),
-                        // child: SizedBox(
-                        //   height: 100, // <-- match_parent
-                        //   child: TextButton(
-                        //     style: TextButton.styleFrom(
-                        //       //primary: Colors.blue,
-                        //     ),
-                        //     onPressed: () { print(_allCategories[index].id); },
-                        //     child: Text(
-                        //       _allCategories[index].name.toString(),
-                        //       style: TextStyle(color: Colors.white),
-                            
-                        //     ),
-                        //   ),
-                        // ),
-                        
-                        
-                      );
-                    }),
-                    indicatorColor: Colors.white,
-                  ),
-                  // const TabBar(
-                  //   tabs: <Widget>[
-                  //     Tab(
-                  //       icon: Icon(Icons.cloud_outlined),
-                  //     ),
-                  //     Tab(
-                  //       icon: Icon(Icons.beach_access_sharp),
-                  //     ),
-                  //     Tab(
-                  //       icon: Icon(Icons.brightness_5_sharp),
-                  //     ),
-                  //   ],
-                  // ),
-                ),
-                body: _allCategories.length != 0
+          //initialIndex: 1,
+          length: _allCategories.length,
+          child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(
+                "Chọn món vào đơn",
+                textScaleFactor: textScaleFactor,
+                textAlign: TextAlign.center,
+              ),
+              actions: <Widget>[
+                //_rightTopSearchIcon(id)
+                IconButton(
+                  onPressed: () {
+                    // method to show the search bar
+                    showSearch(
+                      context: context,
+                      // delegate to customize the search bar
+                      delegate: CustomSearchDelegate(id: id),
+                      //query: id.toString()
+                    );
+                  },
+                  icon: const Icon(Icons.search),
+                )
+              ],
+              bottom: new TabBar(
+                // tabs: [
+                //   new Tab(icon: new Icon(Icons.directions_car)),
+                //   new Tab(icon: new Icon(Icons.directions_transit)),
+                //   new Tab(icon: new Icon(Icons.directions_bike)),
+                // ],
+                // controller: _controllerTab,
+                isScrollable: true,
+                tabs: List<Widget>.generate(_allCategories.length, (int index) {
+                  return new Tab(
+                    //icon: Icon(Icons.android),
+                    text: _allCategories[index].name.toString(),
+                    // child: SizedBox(
+                    //   height: 100, // <-- match_parent
+                    //   child: TextButton(
+                    //     style: TextButton.styleFrom(
+                    //       //primary: Colors.blue,
+                    //     ),
+                    //     onPressed: () { print(_allCategories[index].id); },
+                    //     child: Text(
+                    //       _allCategories[index].name.toString(),
+                    //       style: TextStyle(color: Colors.white),
+
+                    //     ),
+                    //   ),
+                    // ),
+                  );
+                }),
+                indicatorColor: Colors.white,
+              ),
+              // const TabBar(
+              //   tabs: <Widget>[
+              //     Tab(
+              //       icon: Icon(Icons.cloud_outlined),
+              //     ),
+              //     Tab(
+              //       icon: Icon(Icons.beach_access_sharp),
+              //     ),
+              //     Tab(
+              //       icon: Icon(Icons.brightness_5_sharp),
+              //     ),
+              //   ],
+              // ),
+            ),
+            body: _allCategories.length != 0
                 ? new TabBarView(
                     //controller: _controllerTab,
-                    children:
-                        List<Widget>.generate(_allCategories.length, (int index) {
-                      
+                    children: List<Widget>.generate(_allCategories.length,
+                        (int index) {
                       // print( '_product.productList.length');
                       // print( _product.productList.length);
                       //return Text(_allCategories[index].id.toString());
-                      
-                      
-                      if (_allCategories[index].id == 0) 
+
+                      if (_allCategories[index].id == 0)
                         lProducts = _product.productList;
                       else {
-                         
-                          if( _product.productList.length != 0)
-                            lProducts =
-                              _product.productList.where((item) => item.categoryId == _allCategories[index].id).toList();
-                          
+                        if (_product.productList.length != 0)
+                          lProducts = _product.productList
+                              .where((item) =>
+                                  item.categoryId == _allCategories[index].id)
+                              .toList();
                       }
-                      
-                      return _renderTableView(lProducts, listOrder, _allCategories[index].id);
+
+                      return _renderTableView(
+                          lProducts, listOrder, _allCategories[index].id);
                       //return _tableListRender(_allArea[index].id);
                     }),
                   )
@@ -370,24 +364,23 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           margin: const EdgeInsets.all(10.0),
                           child: Center(child: CircularProgressIndicator())),
                     ],
-              ),
-                  
-                // const TabBarView(
-                //   children: <Widget>[
-                //     Center(
-                //       child: Text("It's cloudy here"),
-                //     ),
-                //     Center(
-                //       child: Text("It's rainy here"),
-                //     ),
-                //     Center(
-                //       child: Text("It's sunny here"),
-                //     ),
-                //   ],
-                // ),
-              ),
-            )
-    );
+                  ),
+
+            // const TabBarView(
+            //   children: <Widget>[
+            //     Center(
+            //       child: Text("It's cloudy here"),
+            //     ),
+            //     Center(
+            //       child: Text("It's rainy here"),
+            //     ),
+            //     Center(
+            //       child: Text("It's sunny here"),
+            //     ),
+            //   ],
+            // ),
+          ),
+        ));
   }
 
   num cartTotal(List<Product> list) {
@@ -402,7 +395,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
     final _tblDetail = Provider.of<TableDetailModel>(context, listen: false);
     if (products.length != 0) {
       // if(categoryId == 0) {
-      
       // }
       // else {
       //   products =  products.where((item) => item.categoryId == categoryId).toList();
@@ -436,141 +428,179 @@ class _TableDetailPageState extends State<TableDetailPage> {
                         product: product,
                         tableId: widget.id,
                       ),
+                      //borderRadius: BorderRadius.circular(7),
                     ),
-                  );
-                },
-                child: checkOrder == 1
-                    ? new Container(
-                        padding: EdgeInsets.all(6),
-                        //margin: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(width: 1.0, color: Colors.black12),
+                    //child: Slidable(
+
+                    child: ListTile(
+                      leading: new Container(
+                          width: 120.0,
+                          //height: 80.0,
+                          decoration: new BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey,
+                                blurRadius:
+                                    1.0, // has the effect of softening the shadow
+                                spreadRadius:
+                                    1.0, // has the effect of extending the shadow
+                                offset: Offset(
+                                  1.0, // horizontal, move right 10
+                                  1.0, // vertical, move down 10
+                                ),
+                              )
+                            ],
+                            // shape: BoxShape.circle,
+                            image: new DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(img),
+                            ),
                           ),
-                          //borderRadius: BorderRadius.circular(7),
-                        ),
-                        //child: Slidable(
-  
-                        child: ListTile(
-                          leading: new Container(
-                              width: 120.0,
-                              //height: 80.0,
-                              decoration: new BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey,
-                                    blurRadius:
-                                        1.0, // has the effect of softening the shadow
-                                    spreadRadius:
-                                        1.0, // has the effect of extending the shadow
-                                    offset: Offset(
-                                      1.0, // horizontal, move right 10
-                                      1.0, // vertical, move down 10
+                          child: Stack(children: <Widget>[
+                            Positioned(
+                                left: 2.0,
+                                top: 5.0,
+                                child: Row(children: <Widget>[
+                                  Icon(Icons.check_circle,
+                                      color: Color(0xFF09a13b)),
+                                ]))
+                          ])),
+                      title: Text(product.productName),
+                      subtitle: Text(product.price.toString().replaceAllMapped(
+                          new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+                          (Match m) => '${m[1]},')),
+                    ),
+
+                    // )
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Stack(
+                      children: [
+                        Container(
+                            height: 120,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(
+                                    0.2,
+                                  ),
+                                  spreadRadius: 3.0,
+                                  blurRadius: 5.0,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 20),
+                                Container(
+                                  //color: Colors.green,
+                                  height: 50,
+                                  width: 100,
+                                  child: Text(
+                                    '${product.productName}\n',
+                                    style: const TextStyle(
+                                      fontSize: 16,
                                     ),
-                                  )
-                                ],
-                                // shape: BoxShape.circle,
-                                image: new DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(img),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  //color: Colors.green,
+                                  height: 20,
+                                  width: 100,
+                                  child: Text(
+                                    '\$${product.price.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}\n',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )),
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            bottomLeft: Radius.circular(
+                              15,
+                            ),
+                          ),
+                          child: Container(
+                            height: 120,
+                            width: 120,
+                            color: Colors.orange,
+                            child: Image.network(
+                              img,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 15,
+                          right: 100,
+                          child: Container(
+                            child: IconButton(
+                              icon: const Icon(Icons.add_circle),
+                              onPressed: () {
+                                // cubit.adding(widget.product);setState(() {
+                                _itemCount++;
+                                _controllerQty[index].text =
+                                    _itemCount.toString();
+                              },
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 25,
+                          right: 40,
+                          child: Container(
+                            height: 30,
+                            width: 68,
+                            child: TextField(
+                              //obscureText: true,
+                              controller: _controllerQty[index],
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Số lượng',
+                                labelStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14.0,
                                 ),
                               ),
-                              child: Stack(children: <Widget>[
-                                Positioned(
-                                    left: 2.0,
-                                    top: 5.0,
-                                    child: Row(children: <Widget>[
-                                      Icon(Icons.check_circle,
-                                          color: Color(0xFF09a13b)),
-                                    ]))
-                              ])),
-                          title: Text(product.productName),
-                          subtitle: Text(product.price
-                              .toString()
-                              .replaceAllMapped(
-                                  new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                                  (Match m) => '${m[1]},')),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                         ),
-  
-                        // )
-                      )
-                    : new  Card(
-                        //color: Colors.blueGrey.shade200,
-                        elevation: 5.0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Image(
-                                height: 80,
-                                width: 80,
-                                image: NetworkImage(img),
+                        Positioned(
+                          top: 15,
+                          right: 0,
+                          child: Container(
+                            child: IconButton(
+                              onPressed: () {
+                                //setState(() {
+                                _itemCount > 1
+                                    ? _itemCount--
+                                    : _itemCount = _itemCount;
+                                _controllerQty[index].text =
+                                    _itemCount.toString();
+                              },
+                              icon: const Icon(
+                                Icons.remove_circle,
                               ),
-                              // Container(
-                              //   width: 80,
-                              //   height: 80.0,
-                              //   decoration: new BoxDecoration(
-                              //     //shape: BoxShape.circle,
-                              //     image: new DecorationImage(
-                              //       fit: BoxFit.cover,
-                              //       image: NetworkImage(img),
-                              //     ),
-                              //   ),
-                              // ),
-                              SizedBox(
-                                width: 160,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    RichText(
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      text: TextSpan(
-                                          text: 'Name: ',
-                                          style: TextStyle(
-                                              color: Colors.blueGrey.shade800,
-                                              fontSize: 16.0),
-                                          children: [
-                                            TextSpan(
-                                                text:
-                                                    '${product.productName}\n',
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.bold)),
-                                          ]),
-                                    ),
-                                    TextField(
-                                      //obscureText: true,
-                                      controller: _controllerQty[index],
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Số lượng',
-                                      ),
-                                      style: TextStyle( color: Colors.black),
-                                    ),
-                                    RichText(
-                                      maxLines: 1,
-                                      text: TextSpan(
-                                          text: 'Price: ' r"",
-                                          style: TextStyle(
-                                              color: Colors.blueGrey.shade800,
-                                              fontSize: 16.0),
-                                          children: [
-                                            TextSpan(
-                                                text:
-                                                    '${product.price.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),(Match m) => '${m[1]},')}\n',
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.bold)),
-                                          ]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              ElevatedButton(
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                            right: 20,
+                            bottom: 10,
+                            child: Container(
+                              child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       primary: Colors.blueGrey.shade900),
                                   onPressed: () {
@@ -604,64 +634,176 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                           showAlertPopup(context, 'Thông báo', 'Lỗi đặt món');
 
                                       });
-                                   
                                   },
                                   child: const Text('Thêm món')),
-                            ],
-                          ),
-                        ),
-                      )
-                    // new Container(
-                    //     padding: EdgeInsets.all(6),
-                    //     //margin: EdgeInsets.all(10),
-                    //     decoration: BoxDecoration(
-                    //       border: Border(
-                    //         //top: BorderSide(width: 16.0, color: Colors.lightBlue.shade50),
-                    //         bottom: BorderSide(width: 1.0, color: Colors.black12),
-                    //       ),
-                    //       //borderRadius: BorderRadius.circular(7),
-                    //     ),
-                    //     //child: Slidable(
-  
-                    //     child: ListTile(
-                    //       leading: new Container(
-                    //         width: 120.0,
-                    //         //height: 80.0,
-                    //         decoration: new BoxDecoration(
-                    //           //shape: BoxShape.circle,
-                    //           image: new DecorationImage(
-                    //             fit: BoxFit.cover,
-                    //             image: NetworkImage(img),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       // title: Text(i.productName),
-                    //       title: TextField(
-                    //         //obscureText: true,
-                    //         //controller: _controllerQty[++index],
-                    //         decoration: InputDecoration(
-                    //           border: OutlineInputBorder(),
-                    //           labelText: 'Số lượng',
-                    //         ),
-                    //       ),
-                    //       subtitle: Text(product.price
-                    //           .toString()
-                    //           .replaceAllMapped(
-                    //               new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                    //               (Match m) => '${m[1]},')),
-                    //     ),
-  
-                    //     //),
-                    //   )
-                    );
-          },
-        );
-        
+                            ))
+                      ],
+                    ),
+                  ),
+            // new Card(
+            //color: Colors.blueGrey.shade200,
+            // elevation: 5.0,
+            // child: Padding(
+            //   padding: const EdgeInsets.all(4.0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //     mainAxisSize: MainAxisSize.max,
+            //     children: [
+            //       Image(
+            //         height: 80,
+            //         width: 80,
+            //         image: NetworkImage(img),
+            //       ),
+            //       // Container(
+            //       //   width: 80,
+            //       //   height: 80.0,
+            //       //   decoration: new BoxDecoration(
+            //       //     //shape: BoxShape.circle,
+            //       //     image: new DecorationImage(
+            //       //       fit: BoxFit.cover,
+            //       //       image: NetworkImage(img),
+            //       //     ),
+            //       //   ),
+            //       // ),
+            //       SizedBox(
+            //         width: 160,
+            //         child: Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             const SizedBox(
+            //               height: 5.0,
+            //             ),
+            //             RichText(
+            //               overflow: TextOverflow.ellipsis,
+            //               maxLines: 1,
+            //               text: TextSpan(
+            //                   text: 'Name: ',
+            //                   style: TextStyle(
+            //                       color: Colors.blueGrey.shade800,
+            //                       fontSize: 16.0),
+            //                   children: [
+            //                     TextSpan(
+            //                         text: '${product.productName}\n',
+            //                         style: const TextStyle(
+            //                             fontWeight: FontWeight.bold)),
+            //                   ]),
+            //             ),
+            //             // TextField(
+            //             //   //obscureText: true,
+            //             //   controller: _controllerQty[index],
+            //             //   decoration: InputDecoration(
+            //             //     border: OutlineInputBorder(),
+            //             //     labelText: 'Số lượng',
+            //             //   ),
+            //             //   style: TextStyle(color: Colors.black),
+            //             // ),
+            //             RichText(
+            //               maxLines: 1,
+            //               text: TextSpan(
+            //                   text: 'Price: ' r"",
+            //                   style: TextStyle(
+            //                       color: Colors.blueGrey.shade800,
+            //                       fontSize: 16.0),
+            //                   children: [
+            //                     TextSpan(
+            //                         text:
+            //                             '${product.price.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}\n',
+            //                         style: const TextStyle(
+            //                             fontWeight: FontWeight.bold)),
+            //                   ]),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //       ElevatedButton(
+            //           style: ElevatedButton.styleFrom(
+            //               primary: Colors.blueGrey.shade900),
+            //           onPressed: () {
+            //             //saveData(index);
+            //             print(_controllerQty[index].text);
+            //             print(product.id);
+
+            //             final snackbar = SnackBar(
+            //               duration: Duration(seconds: 4),
+            //               content: Row(
+            //                 children: <Widget>[
+            //                   CircularProgressIndicator(),
+            //                   Text("  Đặt món...")
+            //                 ],
+            //               ),
+            //             );
+            //             ScaffoldMessenger.of(context)
+            //                 .showSnackBar(snackbar);
+            //             _tblDetail
+            //                 .addItem(
+            //                     widget.id,
+            //                     product.id,
+            //                     num.parse(_controllerQty[index].text),
+            //                     product.price)
+            //                 .then((result) {
+            //               if (result)
+            //                 showAlertPopup(context, 'Thông báo',
+            //                     'Đặt món thành công');
+            //               else
+            //                 showAlertPopup(
+            //                     context, 'Thông báo', 'Lỗi đặt món');
+            //             });
+            //           },
+            //           child: const Text('Thêm món')),
+            //     ],
+            //   ),
+            // ),
+            // )
+            // new Container(
+            //     padding: EdgeInsets.all(6),
+            //     //margin: EdgeInsets.all(10),
+            //     decoration: BoxDecoration(
+            //       border: Border(
+            //         //top: BorderSide(width: 16.0, color: Colors.lightBlue.shade50),
+            //         bottom: BorderSide(width: 1.0, color: Colors.black12),
+            //       ),
+            //       //borderRadius: BorderRadius.circular(7),
+            //     ),
+            //     //child: Slidable(
+
+            //     child: ListTile(
+            //       leading: new Container(
+            //         width: 120.0,
+            //         //height: 80.0,
+            //         decoration: new BoxDecoration(
+            //           //shape: BoxShape.circle,
+            //           image: new DecorationImage(
+            //             fit: BoxFit.cover,
+            //             image: NetworkImage(img),
+            //           ),
+            //         ),
+            //       ),
+            //       // title: Text(i.productName),
+            //       title: TextField(
+            //         //obscureText: true,
+            //         //controller: _controllerQty[++index],
+            //         decoration: InputDecoration(
+            //           border: OutlineInputBorder(),
+            //           labelText: 'Số lượng',
+            //         ),
+            //       ),
+            //       subtitle: Text(product.price
+            //           .toString()
+            //           .replaceAllMapped(
+            //               new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            //               (Match m) => '${m[1]},')),
+            //     ),
+
+            //     //),
+            //   )
+          );
+        },
+      );
     }
     return Container(
       child: Center(
-          child: Text("không có món ăn nào", style: TextStyle(fontSize: 25)),
-          ),
+        child: Text("không có món ăn nào", style: TextStyle(fontSize: 25)),
+      ),
     );
   }
 }
@@ -735,9 +877,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     final _product = Provider.of<ProductModel>(context);
 
-    
-  
-
     List<Product> matchQuery = [];
     for (var p in _product.productList) {
       if (p.productName.toLowerCase().contains(query.toLowerCase())) {
@@ -767,4 +906,3 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     );
   }
 }
-

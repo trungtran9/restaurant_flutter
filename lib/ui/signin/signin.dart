@@ -1,13 +1,15 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 import '../../data/models/auth.dart';
 import '../../utils/popUp.dart';
 import 'newaccount.dart';
-// import 'forgot.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({this.username = ''});
@@ -61,6 +63,15 @@ class LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  _launchURL() async {
+    const url = 'https://app.aiapos.vn/';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -146,83 +157,193 @@ class LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-            ListTile(
-              title: Text(
-                'Remember Me',
-                textScaleFactor: textScaleFactor,
-              ),
-              trailing: Switch.adaptive(
-                onChanged: _auth.handleRememberMe,
-                value: _auth.rememberMe,
+            // ListTile(
+            //   title: Text(
+            //     'Remember Me',
+            //     textScaleFactor: textScaleFactor,
+            //   ),
+            //   trailing: Switch.adaptive(
+            //     onChanged: _auth.handleRememberMe,
+            //     value: _auth.rememberMe,
+            //   ),
+            // ),
+            Container(
+              // padding: const EdgeInsets.all(20),
+              margin: EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        // padding: const EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Checkbox(
+                              onChanged: _auth.handleRememberMe,
+                              value: _auth.rememberMe,
+                            ),
+                            const Text(
+                              'Duy trì đăng nhập',
+                              style: TextStyle(
+                                // color: Colors.black,
+                                // fontWeight: FontWeight.w800,
+                                // fontFamily: 'Roboto',
+                                // letterSpacing: 0.5,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      // const TextSpan(
+                      //   text: 'Hello world!',
+                      //   style: TextStyle(color: Colors.black),
+                      // )
+                      // TextSpan(
+                      //   text: 'but this is',
+                      //   style: new TextStyle(color: Colors.blue),
+                      //   recognizer: new TapGestureRecognizer()
+                      //     ..onTap = () { launch('https://docs.flutter.io/flutter/services/UrlLauncher-class.html');
+                      //   },
+                      // ),
+                      GestureDetector(
+                        child: Text(
+                          'Quên mật khẩu ?',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                        onTap: () {
+                          print('Text was tapped!');
+                          // launch('https://flutter.dev/');
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            ListTile(
-              title: TextButton(
-                child: Text(
-                  'Đăng nhập',
-                  textScaleFactor: textScaleFactor,
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                  // fixedSize: Size(250, 50),
-                ),
-                //color: Colors.blue,
-                onPressed: () {
-                  final form = formKey.currentState!;
-                  if (form.validate()) {
-                    //form.save();
-                    final snackBar = SnackBar(
-                      //duration: Duration(seconds: 30),
-                      content: Row(
-                        children: <Widget>[
-                          CircularProgressIndicator(),
-                          Text("  Logging In...")
-                        ],
+            Container(
+              margin: EdgeInsets.all(16.0),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Container(
+                        margin: EdgeInsets.only(left: 0.0, right: 8.0),
+                        child: MaterialButton(
+                          onPressed: _launchURL,
+                          color: Colors.blue,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    child: Icon(
+                                      Icons.signal_cellular_alt_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      "Quản lý",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Container(
+                        margin: EdgeInsets.only(left: 8.0, right: 0.0),
+                        child: MaterialButton(
+                          // minWidth: double.infinity,
+                          onPressed: () {
+                            final form = formKey.currentState!;
+                            if (form.validate()) {
+                              //form.save();
+                              final snackBar = SnackBar(
+                                //duration: Duration(seconds: 30),
+                                content: Row(
+                                  children: <Widget>[
+                                    CircularProgressIndicator(),
+                                    Text("  Logging In...")
+                                  ],
+                                ),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
 
-                    setState(() => this._status = 'loading');
-                    _auth
-                        .login(
-                      _controllerUsername.text.toString().toLowerCase().trim(),
-                      _controllerPassword.text.toString().trim(),
-                    )
-                        .then((result) {
-                      print(result);
-                      
-                      if (result) {
-                        Navigator.of(context).pushReplacementNamed('/home');
-                      } else {
-                        setState(() => this._status = 'rejected');
-                        showAlertPopup(
-                            context, 'Thông báo', _auth.errorMessage);
-                      }
-                      // if (!globals.isBioSetup) {
-                      //   setState(() {
-                      //     print('Bio No Longer Setup');
-                      //   });
-                      // }
-                    });
-                  }
-                },
-              ),
-              // trailing: !globals.isBioSetup
-              //     ? null
-              //     : NativeButton(
-              //         child: Icon(
-              //           Icons.fingerprint,
-              //           color: Colors.white,
-              //         ),
-              //         color: Colors.redAccent[400],
-              //         onPressed: globals.isBioSetup
-              //             ? loginWithBio
-              //             : () {
-              //                 globals.Utility.showAlertPopup(context, 'Info',
-              //                     "Please Enable in Settings after you Login");
-              //               },
-              //       ),
+                              setState(() => this._status = 'loading');
+                              _auth
+                                  .login(
+                                _controllerUsername.text
+                                    .toString()
+                                    .toLowerCase()
+                                    .trim(),
+                                _controllerPassword.text.toString().trim(),
+                              )
+                                  .then((result) {
+                                print(result);
+
+                                if (result) {
+                                  Navigator.of(context)
+                                      .pushReplacementNamed('/home');
+                                } else {
+                                  setState(() => this._status = 'rejected');
+                                  showAlertPopup(
+                                      context, 'Thông báo', _auth.errorMessage);
+                                }
+                                // if (!globals.isBioSetup) {
+                                //   setState(() {
+                                //     print('Bio No Longer Setup');
+                                //   });
+                                // }
+                              });
+                            }
+                          },
+                          color: Colors.green,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    child: Icon(
+                                      Icons.shopping_cart,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      "Bán hàng",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
             ),
             // FlatButton(
             //   child: Text(
