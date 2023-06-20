@@ -22,8 +22,8 @@ class AuthModel extends ChangeNotifier {
 
   bool get rememberMe => _rememberMe;
 
-  void handleRememberMe(bool value) {
-    _rememberMe = value;
+  void handleRememberMe(bool? value) {
+    _rememberMe = value!;
     notifyListeners();
     SharedPreferences.getInstance().then((prefs) {
       prefs.setBool("remember_me", value);
@@ -178,7 +178,6 @@ class AuthModel extends ChangeNotifier {
 
     // Get Info For User
     // User _newUser = await getInfo(uuid.v4().toString(), username, password);
-    
 
     return true;
   }
