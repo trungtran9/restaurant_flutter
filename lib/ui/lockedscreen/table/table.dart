@@ -62,8 +62,8 @@ class _TablePageState extends State<TablePage> {
       _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
     }
     setState(() {
-      print('data');
       dataList = _dataList;
+      isLoading = false;
     });
   }
 
@@ -174,16 +174,16 @@ class _TablePageState extends State<TablePage> {
     var appBar = AppBar();
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
-    isLoading
-        ? Future.delayed(Duration(seconds: 5), () {
-            // Data loading complete
-            setState(() {
-              isLoading = false;
-            });
-            print('loading true');
-            // Proceed with displaying the loaded data or performing other tasks
-          })
-        : '';
+    // isLoading
+    //     ? Future.delayed(Duration(seconds: 5), () {
+    //         // Data loading complete
+    //         setState(() {
+    //           isLoading = false;
+    //         });
+    //         print('loading true');
+    //         // Proceed with displaying the loaded data or performing other tasks
+    //       })
+    //     : '';
 
     return Scaffold(
         appBar: new AppBar(
