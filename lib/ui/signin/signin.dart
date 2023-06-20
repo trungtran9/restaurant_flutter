@@ -180,10 +180,10 @@ class LoginPageState extends State<LoginPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Checkbox(
-                              onChanged: _auth.handleRememberMe,
-                              value: _auth.rememberMe,
-                            ),
+                            // Checkbox(
+                            //   onChanged: _auth.handleRememberMe,
+                            //   value: _auth.rememberMe,
+                            // ),
                             const Text(
                               'Duy trì đăng nhập',
                               style: TextStyle(

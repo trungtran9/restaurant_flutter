@@ -428,58 +428,60 @@ class _TableDetailPageState extends State<TableDetailPage> {
                 ),
               );
             },
-            child: checkOrder == 1
-                ? new Container(
-                    padding: EdgeInsets.all(6),
-                    //margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(width: 1.0, color: Colors.black12),
-                      ),
-                      //borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: ListTile(
-                      leading: new Container(
-                          width: 120.0,
-                          //height: 80.0,
-                          decoration: new BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius:
-                                    1.0, // has the effect of softening the shadow
-                                spreadRadius:
-                                    1.0, // has the effect of extending the shadow
-                                offset: Offset(
-                                  1.0, // horizontal, move right 10
-                                  1.0, // vertical, move down 10
-                                ),
-                              )
-                            ],
-                            // shape: BoxShape.circle,
-                            image: new DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(img),
-                            ),
-                          ),
-                          child: Stack(children: <Widget>[
-                            Positioned(
-                                left: 2.0,
-                                top: 5.0,
-                                child: Row(children: <Widget>[
-                                  Icon(Icons.check_circle,
-                                      color: Color(0xFF09a13b)),
-                                ]))
-                          ])),
-                      title: Text(product.productName),
-                      subtitle: Text(product.price.toString().replaceAllMapped(
-                          new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                          (Match m) => '${m[1]},')),
-                    ),
+            child: 
+            // checkOrder == 1
+            //     ? new Container(
+            //         padding: EdgeInsets.all(6),
+            //         //margin: EdgeInsets.all(10),
+            //         decoration: BoxDecoration(
+            //           border: Border(
+            //             bottom: BorderSide(width: 1.0, color: Colors.black12),
+            //           ),
+            //           //borderRadius: BorderRadius.circular(7),
+            //         ),
+            //         child: ListTile(
+            //           leading: new Container(
+            //               width: 120.0,
+            //               //height: 80.0,
+            //               decoration: new BoxDecoration(
+            //                 boxShadow: [
+            //                   BoxShadow(
+            //                     color: Colors.grey,
+            //                     blurRadius:
+            //                         1.0, // has the effect of softening the shadow
+            //                     spreadRadius:
+            //                         1.0, // has the effect of extending the shadow
+            //                     offset: Offset(
+            //                       1.0, // horizontal, move right 10
+            //                       1.0, // vertical, move down 10
+            //                     ),
+            //                   )
+            //                 ],
+            //                 // shape: BoxShape.circle,
+            //                 image: new DecorationImage(
+            //                   fit: BoxFit.cover,
+            //                   image: NetworkImage(img),
+            //                 ),
+            //               ),
+            //               child: Stack(children: <Widget>[
+            //                 Positioned(
+            //                     left: 2.0,
+            //                     top: 5.0,
+            //                     child: Row(children: <Widget>[
+            //                       Icon(Icons.check_circle,
+            //                           color: Color(0xFF09a13b)),
+            //                     ]))
+            //               ])),
+            //           title: Text(product.productName),
+            //           subtitle: Text(product.price.toString().replaceAllMapped(
+            //               new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            //               (Match m) => '${m[1]},')),
+            //         ),
 
-                    // )
-                  )
-                : Padding(
+            //         // )
+            //       )
+            //     : 
+                Padding(
                     padding: const EdgeInsets.all(15),
                     child: Stack(
                       children: [
@@ -544,6 +546,14 @@ class _TableDetailPageState extends State<TableDetailPage> {
                             ),
                           ),
                         ),
+                        checkOrder == 1 ?
+                        Positioned(
+                            left: 2.0,
+                            top: 5.0,
+                            child: Row(children: <Widget>[
+                              Icon(Icons.check_circle,
+                                  color: Color(0xFF09a13b)),
+                        ])) :Container(),
                         Positioned(
                           top: 15,
                           right: 100,
