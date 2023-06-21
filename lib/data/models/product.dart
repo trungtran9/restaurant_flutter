@@ -38,7 +38,7 @@ class ProductModel extends ChangeNotifier {
         await http.get(Uri.parse(apiURLV2 + '/product/allProducts?companyId=$companyId'));
     //await Future.delayed(Duration(seconds: 2));
     print(Uri.parse(apiURLV2 + '/product/allProducts?companyId=$companyId'));
-    Iterable list = json.decode(response.body);
+    Iterable list = json.decode(response.body['data']);
     // Use the compute function to run parseProducts in a separate isolate.
     // _ProductList  = list.map<tb.Product>((json) => tb.Product.fromJson(json)).toList();
     _productList = list.map((model) => Product.fromJson(model)).toList();
