@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../../../data/classes/product.dart';
+// import '../../../data/classes/productdata.dart';
 import '../../../data/models/confirm_order.dart';
 import '../../../data/models/product.dart';
 import '../../../data/models/table_detail.dart';
@@ -19,6 +23,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import '../../../data/classes/category.dart' as cat;
 import '../../../data/models/category.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class TableDetailPage extends StatefulWidget {
   @override
@@ -33,7 +38,13 @@ class _TableDetailPageState extends State<TableDetailPage> {
   num totalCart = 0;
   num _itemCount = 0;
   var index = 0;
-  late ScrollController _scrollController;
+  num companyId = 0;
+  bool isLoading = true;
+  num categories = 0;
+  num pageId = 1;
+  List<dynamic> dataList = [];
+  List<dynamic> _dataList = [];
+  ScrollController _scrollController = ScrollController();
   // List<TextEditingController> _controllerQty = [];
   //final SlidableController slidableController = SlidableController();
   late TabController _controllerTab;
@@ -49,6 +60,22 @@ class _TableDetailPageState extends State<TableDetailPage> {
   // final List<int> _itemCount = [];
 
   @override
+  Future<void> fetchData() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var userData = _prefs.getString("user_data") ?? "";
+    if (userData != "") {
+      final data = jsonDecode(userData);
+      companyId = (data['companyId']);
+    }
+    final response = await http.get(Uri.parse(
+        apiURLV2 + '/product/allProducts?companyId=$companyId&page=$pageId'));
+    Iterable list = json.decode(response.body)['data'];
+    _dataList = list.map((model) => Product.fromJson(model)).toList();
+    setState(() {
+      dataList = _dataList;
+    });
+  }
+
   void initState() {
     super.initState();
     final _tblDetail = Provider.of<TableDetailModel>(context, listen: false);
@@ -64,8 +91,51 @@ class _TableDetailPageState extends State<TableDetailPage> {
     final _confirmProduct =
         Provider.of<ConfirmOrderModel>(context, listen: false);
     _confirmProduct.fetchOrderByTable(widget.id);
-    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
     _loadVarriable();
+    fetchData();
+  }
+
+  void _handleTabTap(areaId) async {
+    categories = areaId;
+    pageId = 1;
+    final response;
+    print('categories $categories');
+    print('pageId $pageId');
+    if (categories != 0) {
+      response = await http.get(Uri.parse(apiURLV2 +
+          '/product/all_product_by_category?companyId=$companyId&catId=$categories&page=$pageId'));
+    } else {
+      response = await http.get(Uri.parse(
+          apiURLV2 + '/product/allProducts?companyId=$companyId&page=$pageId'));
+    }
+    Iterable list = json.decode(response.body)['data'];
+    _dataList = list.map((model) => Product.fromJson(model)).toList();
+    setState(() {
+      dataList = _dataList;
+    });
+  }
+
+  void _scrollListener() async {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      print('scroll $categories');
+      final response;
+      pageId = pageId + 1;
+      if (categories != 0) {
+        response = await http.get(Uri.parse(apiURLV2 +
+            '/product/all_product_by_category?companyId=$companyId&catId=$categories&page=$pageId'));
+      } else {
+        response = await http.get(Uri.parse(apiURLV2 +
+            '/product/allProducts?companyId=$companyId&page=$pageId'));
+      }
+      Iterable list = json.decode(response.body)['data'];
+      _dataList = list.map((model) => Product.fromJson(model)).toList();
+      setState(() {
+        dataList.addAll(_dataList);
+      });
+    }
   }
 
   createControllers(products) {
@@ -86,12 +156,18 @@ class _TableDetailPageState extends State<TableDetailPage> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final id = widget.id;
     final _tblDetail = Provider.of<TableDetailModel>(context);
     final _product = Provider.of<ProductModel>(context);
 
-    createControllers(_product.productList);
+    createControllers(dataList);
 
     final _confirmProduct = Provider.of<ConfirmOrderModel>(context);
     final _categories = Provider.of<CategoryModel>(context);
@@ -291,10 +367,18 @@ class _TableDetailPageState extends State<TableDetailPage> {
                 //   new Tab(icon: new Icon(Icons.directions_bike)),
                 // ],
                 // controller: _controllerTab,
+
                 isScrollable: true,
+                onTap: (index) {
+                  // Should not used it as it only called when tab options are clicked,
+                  // not when user swapped
+                  num catId = _allCategories[index].id;
+                  _handleTabTap(catId);
+                },
                 tabs: List<Widget>.generate(_allCategories.length, (int index) {
                   return new Tab(
                     //icon: Icon(Icons.android),
+
                     text: _allCategories[index].name.toString(),
                     // child: SizedBox(
                     //   height: 100, // <-- match_parent
@@ -348,7 +432,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
                       }
 
                       return _renderTableView(
-                          lProducts, listOrder, _allCategories[index].id);
+                          dataList, listOrder, _allCategories[index].id);
                       //return _tableListRender(_allArea[index].id);
                     }),
                   )
@@ -398,7 +482,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
       // }
 
       return ListView.builder(
-        //controller: _scrollController,
+        controller: _scrollController,
         itemCount: products.length,
         shrinkWrap: true,
         physics: ClampingScrollPhysics(),
