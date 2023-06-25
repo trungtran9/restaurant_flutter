@@ -157,61 +157,24 @@ class LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-            // ListTile(
-            //   title: Text(
-            //     'Remember Me',
-            //     textScaleFactor: textScaleFactor,
-            //   ),
-            //   trailing: Switch.adaptive(
-            //     onChanged: _auth.handleRememberMe,
-            //     value: _auth.rememberMe,
-            //   ),
-            // ),
+            ListTile(
+              title: Text(
+                'Remember Me',
+                textScaleFactor: textScaleFactor,
+              ),
+              trailing: Switch.adaptive(
+                onChanged: _auth.handleRememberMe,
+                value: _auth.rememberMe,
+              ),
+            ),
             Container(
               // padding: const EdgeInsets.all(20),
-              margin: EdgeInsets.all(16.0),
+              margin: EdgeInsets.only(left: 16.0, right: 16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Column(
                     children: [
-                      Container(
-                        // padding: const EdgeInsets.all(20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Checkbox(
-                            //   onChanged: _auth.handleRememberMe,
-                            //   value: _auth.rememberMe,
-                            // ),
-                            const Text(
-                              'Duy trì đăng nhập',
-                              style: TextStyle(
-                                // color: Colors.black,
-                                // fontWeight: FontWeight.w800,
-                                // fontFamily: 'Roboto',
-                                // letterSpacing: 0.5,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      // const TextSpan(
-                      //   text: 'Hello world!',
-                      //   style: TextStyle(color: Colors.black),
-                      // )
-                      // TextSpan(
-                      //   text: 'but this is',
-                      //   style: new TextStyle(color: Colors.blue),
-                      //   recognizer: new TapGestureRecognizer()
-                      //     ..onTap = () { launch('https://docs.flutter.io/flutter/services/UrlLauncher-class.html');
-                      //   },
-                      // ),
                       GestureDetector(
                         child: Text(
                           'Quên mật khẩu ?',
@@ -221,7 +184,6 @@ class LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         onTap: () {
-                          print('Text was tapped!');
                           // launch('https://flutter.dev/');
                         },
                       ),
