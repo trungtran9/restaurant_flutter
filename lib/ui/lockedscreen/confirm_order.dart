@@ -31,21 +31,21 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
       key: _scaffoldKey,
       //resizeToAvoidBottomPadding: false,
       appBar: new AppBar(
-        leading: new IconButton(
-          icon: new Icon(Icons.arrow_back), 
-          onPressed: (){
-            //Navigator.of(context).pushNamed('/table-detail/${widget.tableId}');
-            //Navigator.of(context).pushReplacementNamed('/table-detail/' + widget.tableId.toString());
-           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (content) => TableDetailPage(
-                                id: widget.tableId,
-                              ),
-                            ),
-                          );
-          }
-        ),
+        // leading: new IconButton(
+        //   icon: new Icon(Icons.arrow_back), 
+        //   onPressed: (){
+        //     //Navigator.of(context).pushNamed('/table-detail/${widget.tableId}');
+        //     //Navigator.of(context).pushReplacementNamed('/table-detail/' + widget.tableId.toString());
+        //    Navigator.push(
+        //                     context,
+        //                     MaterialPageRoute(
+        //                       builder: (content) => TableDetailPage(
+        //                         id: widget.tableId,
+        //                       ),
+        //                     ),
+        //                   );
+        //   }
+        // ),
         centerTitle: true,
         title: Text(
           'Xác nhận món',
@@ -107,7 +107,15 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
               child: new InkResponse(
                 onTap: () {
                   
-                  Navigator.of(context).pushReplacementNamed('/table-detail/' + widget.tableId.toString());
+                  // Navigator.of(context).pushReplacementNamed('/table-detail/' + widget.tableId.toString());
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (content) => TableDetailPage(
+                        id: widget.tableId,
+                      ),
+                    ),
+                  );
                 },
                 child: new Row(
                   mainAxisAlignment: MainAxisAlignment.center,
