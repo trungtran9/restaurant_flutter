@@ -32,7 +32,8 @@ import '../../widgets/dashboard_title.dart';
 import '../../widgets/table_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants.dart';
-import 'package:intl/intl.dart';   
+import 'package:intl/intl.dart';
+
 class TableViewPage extends StatefulWidget {
   TableViewPage({required this.tableId, this.tableName, this.areaName});
   final num tableId;
@@ -45,10 +46,10 @@ class TableViewPage extends StatefulWidget {
 class _TableViewPageState extends State<TableViewPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Dashboard> _dashboard = <Dashboard>[];
-    num companyId = 0;
+  num companyId = 0;
   @override
-   String? selectedValue;
-   final List<String> items = [
+  String? selectedValue;
+  final List<String> items = [
     'Item1',
     'Item2',
     'Item3',
@@ -59,7 +60,6 @@ class _TableViewPageState extends State<TableViewPage> {
     'Item8',
   ];
   void initState() {
-     
     // TODO: implement initState
     final _tblDetail = Provider.of<TableDetailModel>(context, listen: false);
     _tblDetail.fetchProductsByTable(widget.tableId);
@@ -92,6 +92,7 @@ class _TableViewPageState extends State<TableViewPage> {
       print('e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     //print(widget.tableId);
@@ -99,7 +100,7 @@ class _TableViewPageState extends State<TableViewPage> {
     print(companyId);
     var width = MediaQuery.of(context).size.width;
     final _tblDetail = Provider.of<TableDetailModel>(context);
-    
+
     return Scaffold(
         key: _scaffoldKey,
         //resizeToAvoidBottomPadding: false,
@@ -115,7 +116,6 @@ class _TableViewPageState extends State<TableViewPage> {
             textAlign: TextAlign.center,
           ),
           actions: <Widget>[
-            
             //_rightTopSearchIcon(id)
 
             Center(
@@ -127,13 +127,12 @@ class _TableViewPageState extends State<TableViewPage> {
                     color: Colors.white,
                   ),
                   menuItemStyleData: MenuItemStyleData(
-                  customHeights: [
-                    ...List<double>.filled(MenuItems.firstItems.length, 48),
-                    8,
-                   
-                  ],
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                ),
+                    customHeights: [
+                      ...List<double>.filled(MenuItems.firstItems.length, 48),
+                      8,
+                    ],
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                  ),
 
                   items: [
                     ...MenuItems.firstItems.map(
@@ -144,10 +143,12 @@ class _TableViewPageState extends State<TableViewPage> {
                     ),
                     const DropdownMenuItem<Divider>(
                         enabled: false, child: Divider()),
-                   
                   ],
                   onChanged: (value) {
-                    MenuItems.onChanged(context, value as MenuItem, widget.tableId, _tblDetail.productList);
+                    // MenuItems.onChanged(context, value as MenuItem,
+                    //     widget.tableId, _tblDetail.productList);
+                    MenuItems.onChanged(context, value as MenuItem,
+                        widget.tableId, _tblDetail.getTableName.toString());
                   },
                   dropdownStyleData: DropdownStyleData(
                     width: 160,
@@ -174,74 +175,89 @@ class _TableViewPageState extends State<TableViewPage> {
             ),
           ],
         ),
-        floatingActionButton: _tblDetail.tableStatus == 1
-            ? SpeedDial(
-                // both default to 16
-                //marginRight: width/2 -16,
-                //marginBottom: 30,
-                animatedIcon: AnimatedIcons.menu_close,
-                animatedIconTheme: IconThemeData(size: 22.0),
-                // this is ignored if animatedIcon is non null
-                // child: Icon(Icons.add),
-                // If true user is forced to close dial manually
-                // by tapping main button and overlay is not rendered.
-                closeManually: false,
-                curve: Curves.bounceIn,
-                overlayColor: Colors.black,
-                overlayOpacity: 0.5,
-                onOpen: () => print('OPENING DIAL'),
-                onClose: () => print('DIAL CLOSED'),
-                tooltip: 'Speed Dial',
-                heroTag: 'speed-dial-hero-tag',
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                elevation: 8.0,
-                shape: CircleBorder(),
-                children: [
-                  SpeedDialChild(
-                      child: Icon(Icons.repeat_one),
-                      backgroundColor: Colors.red,
-                      label: 'Gộp bàn',
-                      labelStyle: TextStyle(fontSize: 18.0),
-                      onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MergeTablePage(
-                                tableId: widget.tableId,
-                                tableName: _tblDetail.getTableName.toString(),
-                              ),
-                            ),
-                          )),
-                  SpeedDialChild(
-                    child: Icon(Icons.swap_horiz),
-                    backgroundColor: Colors.blue,
-                    label: 'Chuyển bàn',
-                    labelStyle: TextStyle(fontSize: 18.0),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MoveTablePage(
-                            tableId: widget.tableId,
-                            tableName: _tblDetail.getTableName.toString(),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  // SpeedDialChild(
-                  //   child: Icon(Icons.keyboard_voice),
-                  //   backgroundColor: Colors.green,
-                  //   label: 'Third',
-                  //   labelStyle: TextStyle(fontSize: 18.0),
-                  //   onTap: () => print('THIRD CHILD'),
-                  // ),
-                ],
-              )
-            : Container(
-                height: 0,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (content) => TableDetailPage(
+                  id: widget.tableId,
+                ),
               ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            );
+          },
+          //tooltip: 'Increment',
+          child: const Icon(Icons.add),
+        ),
+        // floatingActionButton: _tblDetail.tableStatus == 1
+        //     ? SpeedDial(
+        //         // both default to 16
+        //         //marginRight: width/2 -16,
+        //         //marginBottom: 30,
+        //         animatedIcon: AnimatedIcons.menu_close,
+        //         animatedIconTheme: IconThemeData(size: 22.0),
+        //         // this is ignored if animatedIcon is non null
+        //         // child: Icon(Icons.add),
+        //         // If true user is forced to close dial manually
+        //         // by tapping main button and overlay is not rendered.
+        //         closeManually: false,
+        //         curve: Curves.bounceIn,
+        //         overlayColor: Colors.black,
+        //         overlayOpacity: 0.5,
+        //         onOpen: () => print('OPENING DIAL'),
+        //         onClose: () => print('DIAL CLOSED'),
+        //         tooltip: 'Speed Dial',
+        //         heroTag: 'speed-dial-hero-tag',
+        //         backgroundColor: Colors.white,
+        //         foregroundColor: Colors.black,
+        //         elevation: 8.0,
+        //         shape: CircleBorder(),
+        //         children: [
+        //           SpeedDialChild(
+        //               child: Icon(Icons.repeat_one),
+        //               backgroundColor: Colors.red,
+        //               label: 'Gộp bàn',
+        //               labelStyle: TextStyle(fontSize: 18.0),
+        //               onTap: () => Navigator.push(
+        //                     context,
+        //                     MaterialPageRoute(
+        //                       builder: (context) => MergeTablePage(
+        //                         tableId: widget.tableId,
+        //                         tableName: _tblDetail.getTableName.toString(),
+        //                       ),
+        //                     ),
+        //                   )),
+        //           SpeedDialChild(
+        //             child: Icon(Icons.swap_horiz),
+        //             backgroundColor: Colors.blue,
+        //             label: 'Chuyển bàn',
+        //             labelStyle: TextStyle(fontSize: 18.0),
+        //             onTap: () {
+        //               Navigator.push(
+        //                 context,
+        //                 MaterialPageRoute(
+        //                   builder: (context) => MoveTablePage(
+        //                     tableId: widget.tableId,
+        //                     tableName: _tblDetail.getTableName.toString(),
+        //                   ),
+        //                 ),
+        //               );
+        //             },
+        //           ),
+        //           // SpeedDialChild(
+        //           //   child: Icon(Icons.keyboard_voice),
+        //           //   backgroundColor: Colors.green,
+        //           //   label: 'Third',
+        //           //   labelStyle: TextStyle(fontSize: 18.0),
+        //           //   onTap: () => print('THIRD CHILD'),
+        //           // ),
+        //         ],
+        //       )
+        //     : Container(
+        //         height: 0,
+        //       ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        //floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: (_tblDetail.productList != null &&
                 _tblDetail.productList.length > 0)
             ? BottomAppBar(
@@ -268,16 +284,19 @@ class _TableViewPageState extends State<TableViewPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            new Icon(
-                              Icons.library_add,
-                              color: Color(0xFFFFFFFF),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5),
-                              child: new Text(
-                                'Thêm món',
-                                style: TextStyle(color: Color(0xFFFFFFFF)),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                primary: Colors.white,
                               ),
+                              onPressed: () {
+                                print('aaaaa');
+                                showPreAlert(context, widget.tableId,
+                                    _tblDetail.productList);
+                                // this.onChanged(context, value as MenuItem,
+                                //     widget.tableId, _tblDetail.productList);
+                              },
+                              child: Text('Xem tạm tính'),
                             ),
                           ],
                         ),
@@ -287,39 +306,127 @@ class _TableViewPageState extends State<TableViewPage> {
                       padding: EdgeInsets.only(left: 10, right: 10),
                       margin: EdgeInsets.all(12),
                       child: new InkResponse(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (content) => PrintPage(
-                                        tableId: widget.tableId,
-                                        tableName:
-                                            _tblDetail.getTableName.toString(),
-                                        areaName:
-                                            _tblDetail.getAreaName.toString(),
-                                        companyId: companyId
-                                      )));
-                        },
                         child: new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            new Icon(
-                              Icons.print,
-                              color: Color(0xFFFFFFFF),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5),
-                              child: new Text(
-                                'Báo bếp',
-                                style: TextStyle(color: Color(0xFFFFFFFF)),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                primary: Colors.white,
                               ),
+                              onPressed: () {
+                                print('thanh toán');
+                                // this.onChanged(context, value as MenuI
+                              },
+                              child: Text('Thanh toán'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+                      margin: EdgeInsets.all(12),
+                      child: new InkResponse(
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 0, 140, 255),
+                                primary: Colors.white,
+                              ),
+                              onPressed: () {
+                                print('thông báo');
+                                // this.onChanged(context, value as MenuI
+                              },
+                              child: Text('Thông báo'),
                             ),
                           ],
                         ),
                       ),
                     ),
                     // Container(
+                    //   padding: EdgeInsets.only(left: 10, right: 10),
+                    //   margin: EdgeInsets.all(12),
+                    //   child: new InkResponse(
+                    //     onTap: () {
+                    //       Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //           builder: (content) => TableDetailPage(
+                    //             id: widget.tableId,
+                    //           ),
+                    //         ),
+                    //       );
+                    //     },
+                    //     child: new Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       mainAxisSize: MainAxisSize.min,
+                    //       children: <Widget>[
+                    //         new Icon(
+                    //           Icons.library_add,
+                    //           color: Color(0xFFFFFFFF),
+                    //         ),
+                    //         Padding(
+                    //           padding: EdgeInsets.only(left: 5),
+                    //           child: new Text(
+                    //             'Thêm món',
+                    //             style: TextStyle(color: Color(0xFFFFFFFF)),
+                    //           ),
+                    //         ),
+                    //         // TextButton(
+                    //         //   style: TextButton.styleFrom(
+                    //         //     primary: Colors.blue,
+                    //         //   ),
+                    //         //   onPressed: () {
+                    //         //     print('aaaaa');
+                    //         //   },
+                    //         //   child: Text('Xem tạm tính'),
+                    //         // ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // Container(
+                    //   padding: EdgeInsets.only(left: 10, right: 10),
+                    //   margin: EdgeInsets.all(12),
+                    //   child: new InkResponse(
+                    //     onTap: () {
+                    //       Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (content) => PrintPage(
+                    //                   tableId: widget.tableId,
+                    //                   tableName:
+                    //                       _tblDetail.getTableName.toString(),
+                    //                   areaName:
+                    //                       _tblDetail.getAreaName.toString(),
+                    //                   companyId: companyId)));
+                    //     },
+                    //     child: new Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       mainAxisSize: MainAxisSize.min,
+                    //       children: <Widget>[
+                    //         new Icon(
+                    //           Icons.print,
+                    //           color: Color(0xFFFFFFFF),
+                    //         ),
+                    //         Padding(
+                    //           padding: EdgeInsets.only(left: 5),
+                    //           child: new Text(
+                    //             'Báo bếp',
+                    //             style: TextStyle(color: Color(0xFFFFFFFF)),
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // // Container(
                     //   padding: EdgeInsets.only(left: 10, right: 10),
                     //   margin: EdgeInsets.all(12),
                     //   child: new InkResponse(
@@ -875,7 +982,7 @@ class _TableViewPageState extends State<TableViewPage> {
           );
         });
   }
-  
+
   showAlertDialog(BuildContext context, num tableId, num productId) {
     final _removeProduct =
         Provider.of<TableDetailModel>(context, listen: false);
@@ -931,17 +1038,18 @@ class _TableViewPageState extends State<TableViewPage> {
     );
   }
 }
+
 // tam tinh
-  showPreAlert(BuildContext context, tableId, products) {
-     List text = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    final total = products.fold(0, (sum, item) => sum + (item.price)*item.qty);
-    print(total);
-    var formatter = NumberFormat('#,###');
-    
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
+showPreAlert(BuildContext context, tableId, products) {
+  List text = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  final total = products.fold(0, (sum, item) => sum + (item.price) * item.qty);
+  print(total);
+  var formatter = NumberFormat('#,###');
+
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -963,46 +1071,43 @@ class _TableViewPageState extends State<TableViewPage> {
                   style: TextStyle(
                     fontSize: 24.0,
                   ),
-                  
                 ),
-            
               ],
-          ),
-            content:  
-            products.length > 0 ?
-            Container(
-              height: 300.0, // Change as per your requirement
-              width: 300.0, // Change as per your requirement
-              child: ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) => Card(
-                  elevation: 6,
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.purple,
-                      child: Text(((index) + 1).toString()),
+            ),
+            content: products.length > 0
+                ? Container(
+                    height: 300.0, // Change as per your requirement
+                    width: 300.0, // Change as per your requirement
+                    child: ListView.builder(
+                      itemCount: products.length,
+                      itemBuilder: (context, index) => Card(
+                        elevation: 6,
+                        margin: const EdgeInsets.all(10),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.purple,
+                            child: Text(((index) + 1).toString()),
+                          ),
+                          title: Text(products[index].productName.toString()),
+                          //subtitle: Text("Giá: " + '${formatter.format(products[index].price.toInt())}'.replaceAll(',', '.').toString()),
+                          subtitle: Text(
+                              "Giá: " + showPriceText(products[index].price)),
+                          trailing: Text(
+                              "Số lượng: " + products[index].qty.toString()),
+                        ),
+                      ),
                     ),
-                    title: Text(products[index].productName.toString()),
-                    //subtitle: Text("Giá: " + '${formatter.format(products[index].price.toInt())}'.replaceAll(',', '.').toString()),
-                    subtitle: Text("Giá: " + showPriceText(products[index].price)),
-                    trailing: Text("Số lượng: " + products[index].qty.toString()),
-                  ),
-                ),
-              ),
-            )
-            
-          : Column(
-            children: List.generate(text.length, (index) {
-              return Text(
-                text[index].toString(),
-                style: const TextStyle(fontSize: 22),
-              );
-            }),
-          ) 
-          );
-        });
-  }
+                  )
+                : Column(
+                    children: List.generate(text.length, (index) {
+                      return Text(
+                        text[index].toString(),
+                        style: const TextStyle(fontSize: 22),
+                      );
+                    }),
+                  ));
+      });
+}
 
 class MenuItem {
   final String text;
@@ -1015,12 +1120,15 @@ class MenuItem {
 }
 
 class MenuItems {
-  static const List<MenuItem> firstItems = [home, payment, cancel];
+  //static const List<MenuItem> firstItems = [home, payment, cancel];
+  static const List<MenuItem> firstItems = [add, move, cancel];
   static const List<MenuItem> secondItems = [logout];
 
-  static const home = MenuItem(text: 'Tạm tính', icon: Icons.table_view);
-  static const payment = MenuItem(text: 'Thanh toán', icon: Icons.payment);
+  // static const home = MenuItem(text: 'Tạm tính', icon: Icons.table_view);
+  // static const payment = MenuItem(text: 'Thanh toán', icon: Icons.payment);
   static const cancel = MenuItem(text: 'Hủy đơn', icon: Icons.cancel);
+  static const add = MenuItem(text: 'Gộp bàn', icon: Icons.repeat_one);
+  static const move = MenuItem(text: 'Chuyển bàn', icon: Icons.swap_horiz);
   static const logout = MenuItem(text: 'Log Out', icon: Icons.logout);
 
   static Widget buildItem(MenuItem item) {
@@ -1040,14 +1148,35 @@ class MenuItems {
     );
   }
 
-  static onChanged(BuildContext context, MenuItem item, num tableId, products) {
+  static onChanged(
+      BuildContext context, MenuItem item, num tableId, tableName) {
     switch (item) {
-      case MenuItems.home:
+      case MenuItems.add:
         //Do something
-        print('home');
-        print(tableId);
-        showPreAlert(context, tableId, products);
-        print(products);
+        print('home $context');
+        print('tableId $tableId');
+        print('item $item');
+        //showPreAlert(context, tableId, products);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MergeTablePage(
+                tableId: tableId,
+                tableName: tableName,
+              ),
+            ));
+        //print('products $products');
+        break;
+      case MenuItems.move:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MoveTablePage(
+              tableId: tableId,
+              tableName: tableName,
+            ),
+          ),
+        );
         break;
       case MenuItems.cancel:
         print('home');
