@@ -20,12 +20,9 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'dart:convert';
 import 'package:charset_converter/charset_converter.dart';
 import 'package:tiengviet/tiengviet.dart';
-// import 'package:ping_discover_network/ping_discover_network.dart';
-// import 'package:wifi/wifi.dart';
-// import 'package:pdf/pdf.dart';
-// import 'package:pdf/widgets.dart' as pw;
-// import 'package:printing/printing.dart';
+
 import 'package:dropdown_button2/src/dropdown_button2.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PrintPage extends StatefulWidget {
   PrintPage({required this.tableId, required this.companyId, this.tableName,  this.areaName});
@@ -68,7 +65,8 @@ class _PrintPageState extends State<PrintPage> {
     print('_printOrder.productIncludePrint');
     print(countOrder((_printOrder.getNotify)));
     _selectPrint = (_printOrder.printList);
-   
+    final ButtonStyle style =
+        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
     
     if(_selectPrint.length > 0) {
       _selectPrint.forEach((element) async {
@@ -224,7 +222,56 @@ class _PrintPageState extends State<PrintPage> {
               _checkPrint.length != 0 &&
               _productToPrint != null &&
               isHistory == false
-          ? BottomAppBar(
+          ? 
+          //  BottomAppBar(
+          
+          //   color: Colors.blue,
+          //   child: IconTheme(
+          //     data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          //     child: Row(
+          //       children: <Widget>[
+          //         IconButton(
+          //           tooltip: 'Open navigation menu',
+          //           icon: const Icon(Icons.menu),
+          //           onPressed: () {},
+          //         ),
+        
+          //         IconButton(
+          //           tooltip: 'Search',
+          //           icon: const Icon(Icons.search),
+          //           onPressed: () {
+          //             Fluttertoast.showToast(
+          //                                   msg: "Đặt món thành công",
+          //                                   toastLength: Toast.LENGTH_SHORT,
+          //                                   gravity: ToastGravity.CENTER,
+          //                                   timeInSecForIosWeb: 1,
+          //                                   backgroundColor: Colors.red,
+          //                                   textColor: Colors.white,
+          //                                   fontSize: 16.0);
+                    
+          //           },
+                    
+          //         ),
+          //         IconButton(
+          //           tooltip: 'Favorite',
+          //           icon: const Icon(Icons.favorite),
+          //           onPressed: () {
+          //             print('seach click');
+                      
+          //           },
+          //         ),
+          //         ElevatedButton(
+          //           style: style,
+          //           onPressed: () {
+          //              print('seach click');
+          //           },
+          //           child: const Text('Enabled'),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // )
+          BottomAppBar(
               color: Colors.lightBlueAccent,
               child: new Row(
                 mainAxisSize: MainAxisSize.max,
@@ -235,24 +282,23 @@ class _PrintPageState extends State<PrintPage> {
                     margin: EdgeInsets.all(12),
                     child: new InkResponse(
                       onTap: () {
-                        final snackbar = SnackBar(
-                          duration: Duration(seconds: 4),
-                          content: Row(
-                            children: <Widget>[
-                              CircularProgressIndicator(),
-                              Text("  In báo bếp...")
-                            ],
-                          ),
-                        );
-                        
-                        printD();
+                        // Fluttertoast.showToast(
+                        //   msg: "Lỗi kết nối máy in  yyyy",
+                        //   toastLength: Toast.LENGTH_SHORT,
+                        //   gravity: ToastGravity.CENTER,
+                        //   timeInSecForIosWeb: 1,
+                        //   backgroundColor: Colors.red,
+                        //   textColor: Colors.white,
+                        //   fontSize: 16.0
+                        // );
+                        //print('in-------------bếp');
+                       // printD();
                         
                         //_scaffoldKey.currentState.showSnackBar(snackbar);
 
                         // printNotify(
                         //     printerManager, _newPrintList, widget.tableId);
-                        // printNotifyWithIp(
-                        //     printerManager, widget.tableId, _productToPrint);
+                        printNotifyWithIp( widget.tableId, _newPrintList);
                         //_scaffoldKey.currentState.hideCurrentSnackBar();
                       },
                       child: new Row(
@@ -323,7 +369,17 @@ class _PrintPageState extends State<PrintPage> {
                             //     widget.tableId,
                             //     _productToPrint,
                             //     num.parse(_myActivity));
-                            printD();
+                            // Fluttertoast.showToast(
+                            //   msg: "Lỗi kết nối máy in uuu",
+                            //   toastLength: Toast.LENGTH_SHORT,
+                            //   gravity: ToastGravity.CENTER,
+                            //   timeInSecForIosWeb: 1,
+                            //   backgroundColor: Colors.red,
+                            //   textColor: Colors.white,
+                            //   fontSize: 16.0
+                            // );
+                            //printD();
+                            //printNotifyWithIp( widget.tableId, _newPrintList);
                           },
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -642,7 +698,7 @@ class _PrintPageState extends State<PrintPage> {
       child: Text("OK"),
       onPressed: () {
         final snackbar = SnackBar(
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 2),
           content: Row(
             children: <Widget>[
               CircularProgressIndicator(),
@@ -658,9 +714,25 @@ class _PrintPageState extends State<PrintPage> {
               .then((result) {
             if (result) {
               //_scaffoldKey.currentState.hideCurrentSnackBar();
-              showAlertPopup(context, 'Thông báo', 'Xóa món thành công');
+              //showAlertPopup(context, 'Thông báo', 'Xóa món thành công');
+              Fluttertoast.showToast(
+                msg: "Xóa món thành công",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
             } else {
-              showAlertPopup(context, 'Thông báo', 'Lỗi');
+              //showAlertPopup(context, 'Thông báo', 'Lỗi');
+              Fluttertoast.showToast(
+              msg: "Lỗi xóa món",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
             }
           });
         else
@@ -708,17 +780,25 @@ class _PrintPageState extends State<PrintPage> {
     final printer = NetworkPrinter(paper, profile);
     print(printer);
     try{
-    final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
-    print(res);
+      final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
+      print(res);
     if (res == PosPrintResult.success) {
       testReceipt(printer);
      printer.disconnect();
     } 
      testReceipt(printer);
     }
-     catch (e) {    
-        print(e);
+    catch (e) {    
+        //print(e);
         // do stuff
+        Fluttertoast.showToast(
+          msg: e.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }  
     // final String ip = await Wifi.ip;
     // final String subnet = ip.substring(0, ip.lastIndexOf('.'));
@@ -765,63 +845,153 @@ class _PrintPageState extends State<PrintPage> {
     printer.cut();
   }
 
-  // void printNotifyWithIp(PrinterNetworkManager printerManager, num tableId,
-  //     var printProduct) async {
-  //   //ip = ip != null ? ip : '192.168.1.100';
-  //   // To discover network printers in your subnet, consider using
-  //   // ping_discover_network package (https://pub.dev/packages/ping_discover_network).
-  //   // Note that most of ESC/POS printers are available on port 9100 by default.
+  void printKitchen(List<Print> productPrint, NetworkPrinter printer) async {
+    //final Ticket ticket = Ticket(PaperSize.mm80);
+    try{ 
+      final ticket = printer;
 
-  //   final snackbar = SnackBar(
-  //     duration: Duration(seconds: 4),
-  //     content: Row(
-  //       children: <Widget>[
-  //         CircularProgressIndicator(),
-  //         Text("  In báo bếp...")
-  //       ],
-  //     ),
-  //   );
-  //   _scaffoldKey.currentState.showSnackBar(snackbar);
+      var title = 'Báo Bếp - ' + (widget.tableName ?? '');
+      ticket.text('Bao Bep - ' + (tiengviet(widget.tableName ?? '')),
+          styles: PosStyles(
+              bold: true,
+              align: PosAlign.center,
+              height: PosTextSize.size2,
+              width: PosTextSize.size2),
+          linesAfter: 1);
+      if (widget.areaName != '')
+        ticket.text('Khu Vuc - ' + (tiengviet(widget.areaName ?? '')),
+            styles: PosStyles(
+              bold: true,
+              align: PosAlign.center,
+            ),
+            linesAfter: 1);
+      ticket.row([
+        PosColumn(
+          text: 'STT',
+          width: 2,
+          styles: PosStyles(align: PosAlign.right),
+        ),
+        PosColumn(
+          text: 'TEN MON',
+          width: 8,
+          styles: PosStyles(align: PosAlign.right),
+        ),
+        PosColumn(
+          text: 'SL',
+          width: 2,
+          styles: PosStyles(
+            align: PosAlign.right,
+            underline: true,
+          ),
+        ),
+      ]);
+      ticket.hr();
+      var i = 0;
+      productPrint.forEach((element) {
+        if (element.status == 2)
+          ticket.row([
+            PosColumn(
+              text: (++i).toString() + '.',
+              width: 2,
+              styles: PosStyles(align: PosAlign.right),
+            ),
+            PosColumn(
+              text: tiengviet(element.productName),
+              width: 8,
+              styles: PosStyles(align: PosAlign.right),
+            ),
+            PosColumn(
+              text: 'HUY',
+              width: 2,
+              styles: PosStyles(align: PosAlign.right),
+            ),
+          ]);
+        else
+          ticket.row([
+            PosColumn(
+              text: (++i).toString() + '.',
+              width: 2,
+              styles: PosStyles(align: PosAlign.right),
+            ),
+            PosColumn(
+              text: tiengviet(element.productName),
+              width: 8,
+              styles: PosStyles(align: PosAlign.right),
+            ),
+            PosColumn(
+              text: element.qty.toString(),
+              width: 2,
+              styles: PosStyles(align: PosAlign.right),
+            ),
+          ]);
+      });
+  
+      ticket.feed(2);
+  
+      ticket.cut();
+    }
+    catch (e) {    
+        Fluttertoast.showToast(
+          msg: 'Lỗi gọi máy in',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+    
 
-  //   if (printProduct != null) {
-  //     // print('f-------------------------------');
-  //     // print(printProduct);
-  //     // print('f-------------------------------');
+  }
 
-  //     printProduct.forEach((key, value) async {
-  //       final PrinterNetworkManager printerManager = PrinterNetworkManager();
-  //       final _print = Provider.of<PrintModel>(context, listen: false);
-  //       print(key);
-  //       printerManager.selectPrinter(key, port: 9100);
-  //       Iterable printOb = value.map((model) => Print.fromJson(model)).toList();
-  //       List<Print> printProducts =
-  //           (value as List).map((model) => Print.fromJson(model)).toList();
-  //       // print(value);
-  //       // print(printProducts);
-  //       printProducts =
-  //           printProducts.where((item) => item.status == 0).toList();
-  //       print(printProducts);
-  //       final PosPrintResult res =
-  //           await printerManager.printTicket(await printTicket(printProducts));
-  //       print('Print result: ${res.msg}');
-  //       if (res.msg.contains('Error'))
-  //         showAlertPopup(context, 'Thông báo',
-  //             'Lỗi kết nối máy in, hãy thử lại 1 lần nữa');
-  //       else {
-  //         _print.printOrder(tableId, 0).then((result) {
-  //           if (result) {
-  //             showAlertPopup(context, 'Thông báo', 'Đã báo bếp');
-  //             Navigator.of(context).pushReplacementNamed('/table');
-  //           } else
-  //             showAlertPopup(
-  //                 context, 'Thông báo', 'Lỗi báo bếp, vui lòng thử lại');
-  //         });
-  //       }
-  //     });
-  //   }
 
-  //   //_scaffoldKey.currentState.hideCurrentSnackBar();
-  // }
+  void printNotifyWithIp( num tableId, List<Print> printProduct) async {
+
+
+    const PaperSize paper = PaperSize.mm80;
+      final profile = await CapabilityProfile.load();
+      final printer = NetworkPrinter(paper, profile);
+      print(printer);
+      try{
+        final PosPrintResult res = await printer.connect('192.168.1.12', port: 9100);
+        //print(res);
+        if (res == PosPrintResult.success) {
+          printKitchen(printProduct, printer);
+          printer.disconnect();
+          // print here
+          Fluttertoast.showToast(
+            msg: 'Đã in bếp',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        } 
+        //testReceipt(printer);
+      }
+      catch (e) {    
+          //print(e);
+          // do stuff
+          Fluttertoast.showToast(
+            msg: 'Lỗi kết nối máy in, hãy thử lại 1 lần nữa',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+
+    if (printProduct != null) {
+      // print('f-------------------------------');
+      // print(printProduct);
+      // print('f-------------------------------');
+
+      
+    }
+
+  }
 
   // void printNotify(PrinterNetworkManager printerManager,
   //     List<Print> productPrint, num tableId) async {
@@ -945,8 +1115,9 @@ class _PrintPageState extends State<PrintPage> {
   //   //_scaffoldKey.currentState.hideCurrentSnackBar();
   // }
 
-  // void printTicket(List<Print> productPrint) async {
-  //   final Ticket ticket = Ticket(PaperSize.mm80);
+  // void printTicket(List<Print> productPrint, NetworkPrinter printer) async {
+  //   //final Ticket ticket = Ticket(PaperSize.mm80);
+  //   final ticket = printer;
   //   print(productPrint);
   //   var title = 'Báo Bếp - ' + widget.tableName;
 

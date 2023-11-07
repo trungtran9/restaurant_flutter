@@ -56,15 +56,33 @@ class _TablePageState extends State<TablePage> {
       Iterable list = json.decode(response.body)['data'];
       _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
     } else {
-      final response = await http.get(
-          Uri.parse(apiURLV2 + '/table/?company_id=$companyId&page=$pageId'));
-      Iterable list = json.decode(response.body);
-      _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+      var table_info = _prefs.getString("table_info") ?? "";
+      if(table_info != "") {
+        setState(() {
+        
+          isLoading = false;
+          Iterable list = json.decode(table_info);
+          dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+         // dataList = _dataList;
+          print("get table from local");
+        });
+      }
+      else {
+        final response = await http.get(
+            Uri.parse(apiURLV2 + '/table/?company_id=$companyId&page=$pageId'));
+        Iterable list = json.decode(response.body);
+        _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+
+        setState(() {
+          dataList = _dataList;
+          isLoading = false;
+        });
+        
+        print("get table from api");
+      }
+      
     }
-    setState(() {
-      dataList = _dataList;
-      isLoading = false;
-    });
+    
   }
 
   void initState() {

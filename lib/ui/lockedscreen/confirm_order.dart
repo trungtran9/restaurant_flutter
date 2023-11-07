@@ -6,7 +6,7 @@ import '../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import 'table/table_detail.dart';
 import '../../constants.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 class ConfirmOrderPage extends StatefulWidget {
   @override
   
@@ -65,7 +65,7 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
               child: new InkResponse(
                 onTap: () {
                   final snackbar = SnackBar(
-                  duration: Duration(seconds: 4),
+                  duration: Duration(seconds: 2),
                     content: Row(
                       children: <Widget>[
                         CircularProgressIndicator(),
@@ -77,11 +77,29 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                     _confirmProduct.confirmOrder(widget.tableId).then((result){
                       if (result) {
                         //_scaffoldKey.currentState.hideCurrentSnackBar();
+                        Fluttertoast.showToast(
+                          msg: "Xác nhận thành công",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
+                        );
                         Navigator.of(context).pushReplacementNamed('/table');
                       } 
                       else {
-                          showAlertPopup(context, 'Thông báo', 'Lỗi');
-                        } 
+                          //showAlertPopup(context, 'Thông báo', 'Lỗi');
+                          Fluttertoast.showToast(
+                            msg: "Lỗi",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0
+                          );
+                      } 
                         
                       //Navigator.of(context).pushReplacementNamed('/table-detail/' + tableId.toString());
                   });
@@ -227,7 +245,7 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
       child: Text("OK"),
       onPressed:  () {
         final snackbar = SnackBar(
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 2),
           content: Row(
             children: <Widget>[
               CircularProgressIndicator(),
@@ -239,10 +257,28 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
         _confirmProduct.removeTempProduct(tableId, productId).then((result){
           if (result) {
             //_scaffoldKey.currentState.hideCurrentSnackBar();
-            showAlertPopup(context, 'Thông báo', 'Hủy món thành công');
+            //showAlertPopup(context, 'Thông báo', 'Hủy món thành công');
+            Fluttertoast.showToast(
+              msg: "Hủy món thành công",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+            );
           } 
           else {
-            showAlertPopup(context, 'Thông báo', 'Lỗi');
+            //showAlertPopup(context, 'Thông báo', 'Lỗi');
+            Fluttertoast.showToast(
+              msg: "Lỗi",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0
+            );
           }   
         });
         Navigator.of(context).pop();

@@ -238,7 +238,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
                       child: new InkResponse(
                         onTap: () {
                           final snackbar = SnackBar(
-                            duration: Duration(seconds: 4),
+                            duration: Duration(seconds: 2),
                             content: Row(
                               children: <Widget>[
                                 CircularProgressIndicator(),
@@ -265,8 +265,6 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                   fontSize: 16.0);
                             }
 
-                            // showAlertPopup(
-                            //     context, 'Thông báo', 'Hủy món thành công');
                             Fluttertoast.showToast(
                                 msg: "Hủy món thành công",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -285,10 +283,11 @@ class _TableDetailPageState extends State<TableDetailPage> {
                             new Icon(
                               Icons.replay,
                               color: Color(0xFFFFFFFF),
+                              size: 42
                             ),
                             new Text(
                               'Chọn lại',
-                              style: TextStyle(color: Color(0xFFFFFFFF)),
+                              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16),
                             ),
                           ],
                         ),
@@ -314,8 +313,9 @@ class _TableDetailPageState extends State<TableDetailPage> {
                           children: <Widget>[
                             badges.Badge(
                               badgeContent: Text(totals.toString(),
-                                  style: TextStyle(color: Color(0xFFFFFFFF))),
-                              child: Icon(Icons.shopping_cart,
+                                style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 16)
+                              ),
+                              child: Icon(Icons.shopping_cart, size: 42,
                                   color: Color(0xFFFFFFFF)),
                             )
                           ],
@@ -709,7 +709,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
                                     print(product.id);
 
                                     final snackbar = SnackBar(
-                                      duration: Duration(seconds: 4),
+                                      duration: Duration(seconds: 2),
                                       content: Row(
                                         children: <Widget>[
                                           CircularProgressIndicator(),

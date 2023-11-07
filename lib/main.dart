@@ -19,11 +19,12 @@ import 'package:provider/provider.dart';
 import 'data/models/area.dart';
 import 'data/models/category.dart';
 import 'data/models/confirm_order.dart';
+import 'data/models/dashboard.dart';
 import 'ui/lockedscreen/home.dart';
 import 'ui/lockedscreen/settings.dart';
 import 'ui/signin/newaccount.dart';
 import 'ui/signin/signin.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -52,6 +53,7 @@ class _MyAppState extends State<MyApp> {
     }
     try {
       // _model.init();
+      
     } catch (e) {
       print("Error Loading Theme: $e");
     }

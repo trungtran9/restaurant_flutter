@@ -14,7 +14,9 @@ import '../app/app_drawer.dart';
 import '../../data/models/api.dart';
 import '../../data/classes/user_v2.dart';
 import '../../ui/layout/loading.dart';
-
+import 'package:flutter_login/data/classes/table.dart' as tb;
+import '../../../data/models/table.dart';
+import 'package:http/http.dart' as http;
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -41,17 +43,44 @@ class _HomeState extends State<Home> {
         Map<String, dynamic> data = jsonDecode(userData);
 
         companyId = (data['companyId']);
-        print(data);
+        
       }
-      DashboardAPI.getTables(companyId).then((response) {
+      var dashboard = _prefs.getString("dashboard") ?? "";
+      if (dashboard != "") { 
         setState(() {
-          Iterable list = json.decode(response.body);
-          _dashboard = list.map((model) => Dashboard.fromJson(model)).toList();
+            isLoading = false;
+            Iterable list = json.decode(dashboard);
+            _dashboard = list.map((model) => Dashboard.fromJson(model)).toList();
+            
+            print('_dashboard home get from api');
+            print(_dashboard);
 
-          print('_dashboard');
-          print(_dashboard);
+            
+            
+          });
+
+          final response = await http.get(
+                Uri.parse(apiURLV2 + '/table/?company_id=$companyId&page=1'));
+            Iterable list = json.decode(response.body);
+            var _dataList = list.map((model) => tb.Table.fromJson(model)).toList();
+
+            var _save = json.encode(_dataList);
+            print("Data table save : $_save");
+            _prefs.setString("table_info", _save);
+      }
+      else {
+        DashboardAPI.getTables(companyId).then((response) {
+          setState(() {
+            Iterable list = json.decode(response.body);
+            _dashboard = list.map((model) => Dashboard.fromJson(model)).toList();
+  
+            print('_dashboard home get from api');
+            print(_dashboard);
+          });
         });
-      });
+      }
+      
+      
     } catch (e) {
       print(e);
     }
@@ -73,7 +102,7 @@ class _HomeState extends State<Home> {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     isLoading
-        ? Future.delayed(Duration(seconds: 5), () {
+        ? Future.delayed(Duration(seconds: 1), () {
             // Data loading complete
             setState(() {
               isLoading = false;

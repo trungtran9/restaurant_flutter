@@ -188,7 +188,7 @@ class _MoveTablePageState extends State<MoveTablePage> {
                       onTap: () {
                         //Navigator.of(context).pushNamed('/table-detail/${i.id}');
                         final snackbar = SnackBar(
-                          duration: Duration(seconds: 4),
+                          duration: Duration(seconds: 2),
                           content: Row(
                             children: <Widget>[
                               CircularProgressIndicator(),

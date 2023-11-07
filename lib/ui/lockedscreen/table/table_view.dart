@@ -9,6 +9,7 @@ import '../print/print.dart';
 import 'merge_table.dart';
 import 'move_table.dart';
 import 'table_detail.dart';
+import 'table.dart';
 import '../../../utils/popUp.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,10 @@ import '../../widgets/dashboard_title.dart';
 import '../../widgets/table_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants.dart';
-import 'package:intl/intl.dart';   
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+
 class TableViewPage extends StatefulWidget {
   TableViewPage({required this.tableId, this.tableName, this.areaName});
   final num tableId;
@@ -45,10 +49,10 @@ class TableViewPage extends StatefulWidget {
 class _TableViewPageState extends State<TableViewPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Dashboard> _dashboard = <Dashboard>[];
-    num companyId = 0;
+  num companyId = 0;
   @override
-   String? selectedValue;
-   final List<String> items = [
+  String? selectedValue;
+  final List<String> items = [
     'Item1',
     'Item2',
     'Item3',
@@ -59,7 +63,6 @@ class _TableViewPageState extends State<TableViewPage> {
     'Item8',
   ];
   void initState() {
-     
     // TODO: implement initState
     final _tblDetail = Provider.of<TableDetailModel>(context, listen: false);
     _tblDetail.fetchProductsByTable(widget.tableId);
@@ -92,6 +95,7 @@ class _TableViewPageState extends State<TableViewPage> {
       print('e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     //print(widget.tableId);
@@ -99,7 +103,7 @@ class _TableViewPageState extends State<TableViewPage> {
     print(companyId);
     var width = MediaQuery.of(context).size.width;
     final _tblDetail = Provider.of<TableDetailModel>(context);
-    
+
     return Scaffold(
         key: _scaffoldKey,
         //resizeToAvoidBottomPadding: false,
@@ -115,7 +119,6 @@ class _TableViewPageState extends State<TableViewPage> {
             textAlign: TextAlign.center,
           ),
           actions: <Widget>[
-            
             //_rightTopSearchIcon(id)
 
             Center(
@@ -127,13 +130,12 @@ class _TableViewPageState extends State<TableViewPage> {
                     color: Colors.white,
                   ),
                   menuItemStyleData: MenuItemStyleData(
-                  customHeights: [
-                    ...List<double>.filled(MenuItems.firstItems.length, 48),
-                    8,
-                   
-                  ],
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                ),
+                    customHeights: [
+                      ...List<double>.filled(MenuItems.firstItems.length, 48),
+                      8,
+                    ],
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                  ),
 
                   items: [
                     ...MenuItems.firstItems.map(
@@ -144,10 +146,10 @@ class _TableViewPageState extends State<TableViewPage> {
                     ),
                     const DropdownMenuItem<Divider>(
                         enabled: false, child: Divider()),
-                   
                   ],
                   onChanged: (value) {
-                    MenuItems.onChanged(context, value as MenuItem, widget.tableId, _tblDetail.productList);
+                    MenuItems.onChanged(context, value as MenuItem,
+                        widget.tableId, _tblDetail.productList);
                   },
                   dropdownStyleData: DropdownStyleData(
                     width: 160,
@@ -292,13 +294,12 @@ class _TableViewPageState extends State<TableViewPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (content) => PrintPage(
-                                        tableId: widget.tableId,
-                                        tableName:
-                                            _tblDetail.getTableName.toString(),
-                                        areaName:
-                                            _tblDetail.getAreaName.toString(),
-                                        companyId: companyId
-                                      )));
+                                      tableId: widget.tableId,
+                                      tableName:
+                                          _tblDetail.getTableName.toString(),
+                                      areaName:
+                                          _tblDetail.getAreaName.toString(),
+                                      companyId: companyId)));
                         },
                         child: new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -408,7 +409,7 @@ class _TableViewPageState extends State<TableViewPage> {
                                     .then((result) {
                                   if (result) {
                                     final snackBar = SnackBar(
-                                      duration: Duration(seconds: 4),
+                                      duration: Duration(seconds: 2),
                                       content: Row(
                                         children: <Widget>[
                                           CircularProgressIndicator(),
@@ -421,8 +422,16 @@ class _TableViewPageState extends State<TableViewPage> {
                                     Navigator.of(context)
                                         .pushReplacementNamed('/table');
                                   } else
-                                    showAlertPopup(context, 'Thông báo',
-                                        'Lỗi, vui lòng thử lại sau');
+                                    // showAlertPopup(context, 'Thông báo',
+                                    //     'Lỗi, vui lòng thử lại sau');
+                                    Fluttertoast.showToast(
+                                        msg: "Lỗi, vui lòng thử lại sau",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.red,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0);
                                 });
                               },
                               child: new Row(
@@ -456,7 +465,7 @@ class _TableViewPageState extends State<TableViewPage> {
                                         .then((result) {
                                       if (result) {
                                         final snackbar = SnackBar(
-                                          duration: Duration(seconds: 4),
+                                          duration: Duration(seconds: 2),
                                           content: Row(
                                             children: <Widget>[
                                               CircularProgressIndicator(),
@@ -469,8 +478,14 @@ class _TableViewPageState extends State<TableViewPage> {
                                         Navigator.of(context)
                                             .pushReplacementNamed('/table');
                                       } else
-                                        showAlertPopup(context, 'Thông báo',
-                                            'Lỗi, vui lòng thử lại sau');
+                                        Fluttertoast.showToast(
+                                            msg: "Lỗi, vui lòng thử lại sau",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
                                     });
                                   },
                                   child: new Row(
@@ -680,7 +695,7 @@ class _TableViewPageState extends State<TableViewPage> {
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        "Giá: $price",
+                        "Giá: " + showPriceText(price),
                         style: TextStyle(
                           fontSize: 16.0,
                         ),
@@ -803,6 +818,29 @@ class _TableViewPageState extends State<TableViewPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Expanded(
+                          flex: 4, // 20%
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
+                              // fixedSize: Size(250, 50),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Xóa món",
+                              ),
+                            ),
+                            onPressed: () {
+                              //print('signup');
+                              showAlertDialog(context, tableId, product.id);
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Container(),
+                        ),
+                        Expanded(
                           flex: 4, // 60%
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -827,39 +865,31 @@ class _TableViewPageState extends State<TableViewPage> {
                                 Navigator.pop(context);
                                 if (result) {
                                 } else {
-                                  showAlertPopup(context, 'Thông báo', 'Lỗi');
+                                  Fluttertoast.showToast(
+                                      msg: "Lỗi, vui lòng thử lại sau",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
                                 }
                                 //_scaffoldKey.currentState.hideCurrentSnackBar();
                                 // Navigator.of(context).pushReplacementNamed('/home');
 
-                                showAlertPopup(context, 'Thông báo',
-                                    'Cập nhật thành công');
+                                // showAlertPopup(context, 'Thông báo',
+                                //     'Cập nhật thành công');
+                                Fluttertoast.showToast(
+                                    msg: "Cập nhật thành công",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0);
                                 // Navigator.of(context).pushReplacementNamed(
                                 //     '/table-detail/' + tableId.toString());
                               });
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(),
-                        ),
-                        Expanded(
-                          flex: 4, // 20%
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              // fixedSize: Size(250, 50),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Xóa món",
-                              ),
-                            ),
-                            onPressed: () {
-                              //print('signup');
-                              showAlertDialog(context, tableId, product.id);
                             },
                           ),
                         ),
@@ -875,13 +905,13 @@ class _TableViewPageState extends State<TableViewPage> {
           );
         });
   }
-  
+
   showAlertDialog(BuildContext context, num tableId, num productId) {
     final _removeProduct =
         Provider.of<TableDetailModel>(context, listen: false);
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("Cancel"),
+      child: Text("Hủy"),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
         //launchMissile();
@@ -891,7 +921,7 @@ class _TableViewPageState extends State<TableViewPage> {
       child: Text("OK"),
       onPressed: () {
         final snackbar = SnackBar(
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 2),
           content: Row(
             children: <Widget>[
               CircularProgressIndicator(),
@@ -903,9 +933,28 @@ class _TableViewPageState extends State<TableViewPage> {
         _removeProduct.removeProduct(tableId, productId).then((result) {
           if (result) {
             //_scaffoldKey.currentState.hideCurrentSnackBar();
-            showAlertPopup(context, 'Thông báo', 'Xóa món thành công');
+            // showAlertPopup(context, 'Thông báo', 'Xóa món thành công');
+            Fluttertoast.showToast(
+                msg: "Xóa món thành công",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
+            Navigator.of(context).pop();
           } else {
-            showAlertPopup(context, 'Thông báo', 'Lỗi');
+            //showAlertPopup(context, 'Thông báo', 'Lỗi');
+            Fluttertoast.showToast(
+                msg: "Lỗi xóa món",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
+
+            Navigator.of(context).pop();
           }
         });
         Navigator.of(context).pop();
@@ -931,17 +980,18 @@ class _TableViewPageState extends State<TableViewPage> {
     );
   }
 }
+
 // tam tinh
-  showPreAlert(BuildContext context, tableId, products) {
-     List text = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    final total = products.fold(0, (sum, item) => sum + (item.price)*item.qty);
-    print(total);
-    var formatter = NumberFormat('#,###');
-    
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
+showPreAlert(BuildContext context, tableId, products) {
+  List text = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  final total = products.fold(0, (sum, item) => sum + (item.price) * item.qty);
+  print(total);
+  var formatter = NumberFormat('#,###');
+
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -963,46 +1013,43 @@ class _TableViewPageState extends State<TableViewPage> {
                   style: TextStyle(
                     fontSize: 24.0,
                   ),
-                  
                 ),
-            
               ],
-          ),
-            content:  
-            products.length > 0 ?
-            Container(
-              height: 300.0, // Change as per your requirement
-              width: 300.0, // Change as per your requirement
-              child: ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) => Card(
-                  elevation: 6,
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.purple,
-                      child: Text(((index) + 1).toString()),
+            ),
+            content: products.length > 0
+                ? Container(
+                    height: 300.0, // Change as per your requirement
+                    width: 300.0, // Change as per your requirement
+                    child: ListView.builder(
+                      itemCount: products.length,
+                      itemBuilder: (context, index) => Card(
+                        elevation: 6,
+                        margin: const EdgeInsets.all(10),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.purple,
+                            child: Text(((index) + 1).toString()),
+                          ),
+                          title: Text(products[index].productName.toString()),
+                          //subtitle: Text("Giá: " + '${formatter.format(products[index].price.toInt())}'.replaceAll(',', '.').toString()),
+                          subtitle: Text(
+                              "Giá: " + showPriceText(products[index].price)),
+                          trailing: Text(
+                              "Số lượng: " + products[index].qty.toString()),
+                        ),
+                      ),
                     ),
-                    title: Text(products[index].productName.toString()),
-                    //subtitle: Text("Giá: " + '${formatter.format(products[index].price.toInt())}'.replaceAll(',', '.').toString()),
-                    subtitle: Text("Giá: " + showPriceText(products[index].price)),
-                    trailing: Text("Số lượng: " + products[index].qty.toString()),
-                  ),
-                ),
-              ),
-            )
-            
-          : Column(
-            children: List.generate(text.length, (index) {
-              return Text(
-                text[index].toString(),
-                style: const TextStyle(fontSize: 22),
-              );
-            }),
-          ) 
-          );
-        });
-  }
+                  )
+                : Column(
+                    children: List.generate(text.length, (index) {
+                      return Text(
+                        text[index].toString(),
+                        style: const TextStyle(fontSize: 22),
+                      );
+                    }),
+                  ));
+      });
+}
 
 class MenuItem {
   final String text;
@@ -1040,7 +1087,9 @@ class MenuItems {
     );
   }
 
-  static onChanged(BuildContext context, MenuItem item, num tableId, products) {
+  static onChanged(
+      BuildContext context, MenuItem item, num tableId, products) async {
+    List<dynamic> _dataList = [];
     switch (item) {
       case MenuItems.home:
         //Do something
@@ -1050,8 +1099,67 @@ class MenuItems {
         print(products);
         break;
       case MenuItems.cancel:
-        print('home');
-        //Do something
+        final response = await http.get(Uri.parse(
+            apiURLV2 + '/table/cancel_order?id=' + tableId.toString()));
+        //print(Uri.parse(apiURLV2 + '/table/cancel_order?id=' + tableId.toString()));
+        bool list = json.decode(response.body)['status'];
+        if (list) {
+          Fluttertoast.showToast(
+              msg: json.decode(response.body)['message'].toString(),
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TablePage(),
+            ),
+          );
+        } else {
+          Fluttertoast.showToast(
+              msg: json.decode(response.body)['message'].toString(),
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+        break;
+      case MenuItems.payment:
+        final response = await http.get(
+            Uri.parse(apiURLV2 + '/table/checkout?id=' + tableId.toString()));
+        print(Uri.parse(apiURLV2 + '/table/checkout?id=' + tableId.toString()));
+        bool list = json.decode(response.body)['status'];
+        if (list) {
+          Fluttertoast.showToast(
+              msg: json.decode(response.body)['message'].toString(),
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TablePage(),
+            ),
+          );
+        } else {
+          Fluttertoast.showToast(
+              msg: json.decode(response.body)['message'].toString(),
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+
         break;
     }
   }

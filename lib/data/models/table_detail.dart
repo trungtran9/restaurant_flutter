@@ -60,6 +60,7 @@ class TableDetailModel extends ChangeNotifier {
     
     final response =
         await http.get(Uri.parse(apiURLV2 + '/table/tableByID?id=$tableId'));
+    print(Uri.parse(apiURLV2 + '/table/tableByID?id=$tableId'));
     //await Future.delayed(Duration(seconds: 2));
     Iterable list = json.decode(response.body)['results'];
     // Use the compute function to run parseProducts in a separate isolate.

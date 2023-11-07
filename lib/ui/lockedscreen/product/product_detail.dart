@@ -10,6 +10,7 @@ import '../../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import '../../../constants.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ProductDetailPage extends StatefulWidget {
   ProductDetailPage(
@@ -39,7 +40,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   final TextEditingController _controllerDiscount = TextEditingController();
   num _itemCount = 1;
   num _priceChanged = 0;
-  String _discountOption = 'usd';
+  String _discountOption = 'vnd';
   @override
   void initState() {
     // TODO: implement initState
@@ -103,7 +104,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 if (form.validate()) {
                   //form.save();
                   final snackbar = SnackBar(
-                    duration: Duration(seconds: 4),
+                    duration: Duration(seconds: 2),
                     content: Row(
                       children: <Widget>[
                         CircularProgressIndicator(),
@@ -126,12 +127,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     if (result) {
                     } else {
                       //setState(() => this._status = 'rejected');
-                      showAlertPopup(context, 'Thông báo', 'Lỗi');
+                      Fluttertoast.showToast(
+                        msg: "Lỗi đặt món",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
                     }
                     //_scaffoldKey.currentState.hideCurrentSnackBar();
                     // Navigator.of(context).pushReplacementNamed('/home');
 
-                    showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
+                    //showAlertPopup(context, 'Thông báo', 'Đặt món thành công');
+                    Fluttertoast.showToast(
+                        msg: "Đặt món thành công",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
                     // Navigator.push(
                     //   context,
                     //   MaterialPageRoute(
@@ -187,7 +203,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           child: ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                _discountOption = 'usd';
+                                _discountOption = 'vnd';
                                 if (_controllerDiscount.text != '' &&
                                     num.parse(_controllerDiscount.text) <
                                         product.price * _itemCount) {
@@ -216,7 +232,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             // disabledTextColor: Colors.black,
                             // splashColor: Colors.blueAccent,
                             child: Text(
-                              "Usd",
+                              "VND",
                               style: TextStyle(fontSize: 17.0),
                             ),
                           ),
@@ -280,7 +296,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   _priceChanged =
                                       product.price * (numValue / 100);
                                 } else if (_discountOption.toString() ==
-                                    'usd') {
+                                    'vnd') {
                                   if (numValue != 0 &&
                                       numValue > (product.price * _itemCount)) {
                                     _controllerDiscount.text = '0';
@@ -307,7 +323,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   return 'Giá giảm > 100% ';
                                 }
                                 //_priceChanged = product.price*(numValue/100);
-                              } else if (_discountOption.toString() == 'usd') {
+                              } else if (_discountOption.toString() == 'vnd') {
                                 if (numValue != null &&
                                     numValue > (product.price * _itemCount)) {
                                   // _controllerDiscount.text = '0';

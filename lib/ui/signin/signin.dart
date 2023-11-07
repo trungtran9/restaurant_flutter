@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,6 +11,8 @@ import '../../data/models/auth.dart';
 import '../../utils/popUp.dart';
 import 'newaccount.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../data/models/dashboard.dart';
+import '../../data/classes/dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({this.username = ''});
@@ -24,6 +27,8 @@ class LoginPageState extends State<LoginPage> {
   String _username = '';
   String _password = '';
 
+  List<Dashboard> _dashboard = <Dashboard>[];
+   num companyId = 0;
   // Initially password is obscure
   bool _obscureText = true;
 
@@ -78,6 +83,7 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final _auth = Provider.of<AuthModel>(context, listen: true);
+    
     return Scaffold(
       key: _scaffoldKey,
       body: SafeArea(
@@ -260,12 +266,34 @@ class LoginPageState extends State<LoginPage> {
                                     .trim(),
                                 _controllerPassword.text.toString().trim(),
                               )
-                                  .then((result) {
-                                print(result);
+                                  .then((result) async {
+                                //print(result);
 
-                                if (result) {
+                                if (result){
+                                  //print("call api here");
+                                    SharedPreferences _prefs = await SharedPreferences.getInstance();
+                                    var userData = _prefs.getString("user_data") ?? "";
+                                    if (userData != "") {
+                                      Map<String, dynamic> data = jsonDecode(userData);
+                                      companyId = (data['companyId']);
+                                    }
+                                    
+                                    
+                                
                                   Navigator.of(context)
                                       .pushReplacementNamed('/home');
+                                      
+                                      DashboardAPI.getTables(companyId).then((response) async {
+                                        Iterable list = json.decode(response.body);
+                                        _dashboard = list.map((model) => Dashboard.fromJson(model)).toList();
+
+                                        var _save = json.encode(_dashboard);
+                                        print("Data from sign in: $_save");
+                                        _prefs.setString("dashboard", _save);
+
+
+                                     
+                                    });
                                 } else {
                                   setState(() => this._status = 'rejected');
                                   showAlertPopup(

@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_login/data/classes/print.dart';
 import 'package:flutter_login/data/classes/select_print.dart';
 import 'package:dropdown_button2/src/dropdown_button2.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 class EditPrintPage extends StatefulWidget {
   EditPrintPage({required this.tableId, required this.companyId});
   final num tableId;
@@ -196,7 +196,7 @@ class _EditPrintPageState extends State<EditPrintPage> {
                 child: new InkResponse(
                   onTap: () {
                     final snackbar = SnackBar(
-                      duration: Duration(seconds: 4),
+                      duration: Duration(seconds: 2),
                       content: Row(
                         children: <Widget>[
                           CircularProgressIndicator(),
@@ -320,7 +320,7 @@ class _EditPrintPageState extends State<EditPrintPage> {
       child: Text("OK"),
       onPressed: () {
         final snackbar = SnackBar(
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 2),
           content: Row(
             children: <Widget>[
               CircularProgressIndicator(),
@@ -334,9 +334,23 @@ class _EditPrintPageState extends State<EditPrintPage> {
             .then((result) {
           if (result) {
             //_scaffoldKey.currentState.hideCurrentSnackBar();
-            showAlertPopup(context, 'Thông báo', 'Xóa món thành công');
+            Fluttertoast.showToast(
+              msg: "Xóa món thành công",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
           } else {
-            showAlertPopup(context, 'Thông báo', 'Lỗi');
+            Fluttertoast.showToast(
+              msg: "Lỗi xóa món",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
           }
         });
         Navigator.of(context).pop();
