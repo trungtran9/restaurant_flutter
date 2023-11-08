@@ -11,7 +11,7 @@ import '../../widgets/custom_widget.dart';
 import '../../../utils/popUp.dart';
 import 'package:provider/provider.dart';
 import '../../../constants.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge_prefix;
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TableDetailPage extends StatefulWidget {
@@ -56,10 +56,10 @@ class _TableDetailPageState extends State<TableDetailPage> {
     return Scaffold(
         key: _scaffoldKey,
         //resizeToAvoidBottomPadding: false,
-        appBar: new AppBar(
+        appBar: AppBar(
           //automaticallyImplyLeading: true,
-          leading: new IconButton(
-            icon: new Icon(Icons.arrow_back),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
             onPressed: () {
               //Navigator.of(context).popAndPushNamed('/table');
               Navigator.push(
@@ -86,7 +86,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
         bottomNavigationBar: (listOrder != null && listOrder.length > 0)
             ? BottomAppBar(
                 color: Colors.lightBlueAccent,
-                child: new Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -97,9 +97,9 @@ class _TableDetailPageState extends State<TableDetailPage> {
                     Container(
                       padding: EdgeInsets.only(left: 10, right: 10),
                       margin: EdgeInsets.all(12),
-                      child: new InkResponse(
+                      child: InkResponse(
                         onTap: () {
-                          final snackbar = SnackBar(
+                          const snackbar = SnackBar(
                             duration: Duration(seconds: 4),
                             content: Row(
                               children: <Widget>[
@@ -144,7 +144,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
                     Container(
                       padding: EdgeInsets.only(left: 10, right: 10),
                       margin: EdgeInsets.all(12),
-                      child: new InkResponse(
+                      child: InkResponse(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -155,17 +155,18 @@ class _TableDetailPageState extends State<TableDetailPage> {
                             ),
                           );
                         },
-                        child: new Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             // new Icon(Icons.replay, color: Color(0xFFFFFFFF),),
                             // new Text(list.length.toString(), style: TextStyle(color: Color(0xFFFFFFFF)),),
-                            Badge(
+                            badge_prefix.Badge(
                               //badgeContent: Text(cartTotal(_confirmProduct.productListOrder).toString(), style: TextStyle(color: Color(0xFFFFFFFF))),
                               badgeContent: Text(totals.toString(),
-                                  style: TextStyle(color: Color(0xFFFFFFFF))),
-                              child: Icon(Icons.shopping_cart,
+                                  style: const TextStyle(
+                                      color: Color(0xFFFFFFFF))),
+                              child: const Icon(Icons.shopping_cart,
                                   color: Color(0xFFFFFFFF)),
                             )
                           ],
@@ -180,16 +181,14 @@ class _TableDetailPageState extends State<TableDetailPage> {
         body: _product.productList != null
             ? SingleChildScrollView(
                 child: Column(
-                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.min,
                 children: _product.productList.map((i) {
                   _controllerQty.add(TextEditingController(text: '1'));
 
                   var img = (i.image != "")
-                      ? (apiHomeURL +
-                          '/public/templates/uploads/' +
-                          i.image.toString())
-                      : (apiHomeURL + '/public/templates/uploads/no_image.jpg');
+                      ? ('$apiHomeURL/public/templates/uploads/${i.image}')
+                      : ('$apiHomeURL/public/templates/uploads/no_image.jpg');
                   print(img);
                   //var checkOrder = (listOrder != null && listOrder.length > 0 && listOrder.contains(i.id) ? 1 : 0);
 
@@ -206,10 +205,10 @@ class _TableDetailPageState extends State<TableDetailPage> {
                         // );
                       },
                       child: checkOrder == 1
-                          ? new Container(
+                          ? Container(
                               padding: EdgeInsets.all(6),
                               //margin: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
                                       width: 1.0, color: Colors.black12),
@@ -348,10 +347,10 @@ class _TableDetailPageState extends State<TableDetailPage> {
                               //   ],
                               // )
                             )
-                          : new Container(
+                          : Container(
                               padding: EdgeInsets.all(6),
                               //margin: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 border: Border(
                                   //top: BorderSide(width: 16.0, color: Colors.lightBlue.shade50),
                                   bottom: BorderSide(
@@ -631,8 +630,7 @@ class _TableDetailPageState extends State<TableDetailPage> {
             : Container(
                 height: MediaQuery.of(context).size.height / 2,
                 child: Center(child: CircularProgressIndicator()),
-              )
-            );
+              ));
   }
 
   num cartTotal(List<Product> list) {

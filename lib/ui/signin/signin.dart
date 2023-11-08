@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 import '../../data/models/auth.dart';
 import '../../utils/popUp.dart';
-import 'newaccount.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../data/models/dashboard.dart';
 import '../../data/classes/dashboard.dart';
 
@@ -28,7 +25,7 @@ class LoginPageState extends State<LoginPage> {
   String _password = '';
 
   List<Dashboard> _dashboard = <Dashboard>[];
-   num companyId = 0;
+  num companyId = 0;
   // Initially password is obscure
   bool _obscureText = true;
 
@@ -36,8 +33,8 @@ class LoginPageState extends State<LoginPage> {
   //final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  final TextEditingController _controllerUsername = new TextEditingController();
-  final TextEditingController _controllerPassword = new TextEditingController();
+  final TextEditingController _controllerUsername = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
 
   @override
   initState() {
@@ -57,14 +54,14 @@ class LoginPageState extends State<LoginPage> {
 
   void _loadUsername() async {
     try {
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      var _username = _prefs.getString("saved_username") ?? "";
-      var _password = _prefs.getString("saved_password") ?? "";
-      var _remeberMe = _prefs.getBool("remember_me") ?? false;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var username = prefs.getString("saved_username") ?? "";
+      var password = prefs.getString("saved_password") ?? "";
+      var remeberMe = prefs.getBool("remember_me") ?? false;
 
-      if (_remeberMe) {
-        _controllerUsername.text = _username;
-        _controllerPassword.text = _password;
+      if (remeberMe) {
+        _controllerUsername.text = username;
+        _controllerPassword.text = password;
       }
     } catch (e) {
       print(e);
@@ -82,14 +79,14 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _auth = Provider.of<AuthModel>(context, listen: true);
-    
+    final auth = Provider.of<AuthModel>(context, listen: true);
+
     return Scaffold(
       key: _scaffoldKey,
       body: SafeArea(
         child: ListView(
-          physics: AlwaysScrollableScrollPhysics(),
-          key: PageStorageKey("Divider 1"),
+          physics: const AlwaysScrollableScrollPhysics(),
+          key: const PageStorageKey("Divider 1"),
           children: <Widget>[
             // SizedBox(
             //   height: 220.0,
@@ -103,7 +100,7 @@ class LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 220,
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Image.asset(
                   "assets/images/logo2.png",
                   fit: BoxFit.contain,
@@ -117,7 +114,7 @@ class LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   ListTile(
                     title: TextFormField(
-                      decoration: InputDecoration(labelText: 'Username'),
+                      decoration: const InputDecoration(labelText: 'Username'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Vui lòng nhập tài khoản';
@@ -164,25 +161,25 @@ class LoginPageState extends State<LoginPage> {
               ),
             ),
             ListTile(
-              title: Text(
+              title: const Text(
                 'Remember Me',
                 textScaleFactor: textScaleFactor,
               ),
               trailing: Switch.adaptive(
-                onChanged: _auth.handleRememberMe,
-                value: _auth.rememberMe,
+                onChanged: auth.handleRememberMe,
+                value: auth.rememberMe,
               ),
             ),
             Container(
               // padding: const EdgeInsets.all(20),
-              margin: EdgeInsets.only(left: 16.0, right: 16.0),
+              margin: const EdgeInsets.only(left: 16.0, right: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Column(
                     children: [
                       GestureDetector(
-                        child: Text(
+                        child: const Text(
                           'Quên mật khẩu ?',
                           style: TextStyle(
                             color: Colors.blue,
@@ -199,14 +196,14 @@ class LoginPageState extends State<LoginPage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       flex: 5,
                       child: Container(
-                        margin: EdgeInsets.only(left: 0.0, right: 8.0),
+                        margin: const EdgeInsets.only(left: 0.0, right: 8.0),
                         child: MaterialButton(
                           onPressed: _launchURL,
                           color: Colors.blue,
@@ -217,13 +214,13 @@ class LoginPageState extends State<LoginPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Container(
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.signal_cellular_alt_rounded,
                                       color: Colors.white,
                                     ),
                                   ),
                                   Container(
-                                    child: Text(
+                                    child: const Text(
                                       "Quản lý",
                                       style: TextStyle(color: Colors.white),
                                     ),
@@ -238,14 +235,14 @@ class LoginPageState extends State<LoginPage> {
                     Expanded(
                       flex: 5,
                       child: Container(
-                        margin: EdgeInsets.only(left: 8.0, right: 0.0),
+                        margin: const EdgeInsets.only(left: 8.0, right: 0.0),
                         child: MaterialButton(
                           // minWidth: double.infinity,
                           onPressed: () {
                             final form = formKey.currentState!;
                             if (form.validate()) {
                               //form.save();
-                              final snackBar = SnackBar(
+                              const snackBar = SnackBar(
                                 //duration: Duration(seconds: 30),
                                 content: Row(
                                   children: <Widget>[
@@ -257,8 +254,8 @@ class LoginPageState extends State<LoginPage> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
 
-                              setState(() => this._status = 'loading');
-                              _auth
+                              setState(() => _status = 'loading');
+                              auth
                                   .login(
                                 _controllerUsername.text
                                     .toString()
@@ -269,35 +266,36 @@ class LoginPageState extends State<LoginPage> {
                                   .then((result) async {
                                 //print(result);
 
-                                if (result){
+                                if (result) {
                                   //print("call api here");
-                                    SharedPreferences _prefs = await SharedPreferences.getInstance();
-                                    var userData = _prefs.getString("user_data") ?? "";
-                                    if (userData != "") {
-                                      Map<String, dynamic> data = jsonDecode(userData);
-                                      companyId = (data['companyId']);
-                                    }
-                                    
-                                    
-                                
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  var userData =
+                                      prefs.getString("user_data") ?? "";
+                                  if (userData != "") {
+                                    Map<String, dynamic> data =
+                                        jsonDecode(userData);
+                                    companyId = (data['companyId']);
+                                  }
                                   Navigator.of(context)
                                       .pushReplacementNamed('/home');
-                                      
-                                      DashboardAPI.getTables(companyId).then((response) async {
-                                        Iterable list = json.decode(response.body);
-                                        _dashboard = list.map((model) => Dashboard.fromJson(model)).toList();
 
-                                        var _save = json.encode(_dashboard);
-                                        print("Data from sign in: $_save");
-                                        _prefs.setString("dashboard", _save);
+                                  DashboardAPI.getTables(companyId)
+                                      .then((response) async {
+                                    Iterable list = json.decode(response.body);
+                                    _dashboard = list
+                                        .map((model) =>
+                                            Dashboard.fromJson(model))
+                                        .toList();
 
-
-                                     
-                                    });
+                                    var save = json.encode(_dashboard);
+                                    print("Data from sign in: $save");
+                                    prefs.setString("dashboard", save);
+                                  });
                                 } else {
-                                  setState(() => this._status = 'rejected');
+                                  setState(() => _status = 'rejected');
                                   showAlertPopup(
-                                      context, 'Thông báo', _auth.errorMessage);
+                                      context, 'Thông báo', auth.errorMessage);
                                 }
                                 // if (!globals.isBioSetup) {
                                 //   setState(() {
@@ -308,23 +306,19 @@ class LoginPageState extends State<LoginPage> {
                             }
                           },
                           color: Colors.green,
-                          child: Column(
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Container(
-                                    child: Icon(
-                                      Icons.shopping_cart,
-                                      color: Colors.white,
-                                    ),
+                                  Icon(
+                                    Icons.shopping_cart,
+                                    color: Colors.white,
                                   ),
-                                  Container(
-                                    child: Text(
-                                      "Bán hàng",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
+                                  Text(
+                                    "Bán hàng",
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                 ],
                               ),

@@ -3,43 +3,29 @@ import 'package:flutter/material.dart';
 import '../../../data/models/table.dart';
 import '../../../data/models/table_detail.dart';
 import '../../common/api.dart';
-import '../../../data/classes/table.dart' as tb;
 import '../../../data/classes/product.dart';
 import '../print/print.dart';
 import 'merge_table.dart';
 import 'move_table.dart';
 import 'table_detail.dart';
 import 'table.dart';
-import '../../../utils/popUp.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import '../../../data/models/product.dart';
 import 'dart:convert';
 
-import '../../../data/classes/area.dart';
 import '../../../data/classes/dashboard.dart';
-import '../../../data/models/api.dart';
 import '../../../data/models/area.dart';
-import '../../../data/models/auth.dart';
 import '../../../data/models/dashboard.dart';
 
-import '../../common/api.dart';
-import '../../common/table_search.dart';
-import 'table_view.dart';
-import '../../widgets/custom_widget.dart';
-import '../../widgets/dashboard_title.dart';
-import '../../widgets/table_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 class TableViewPage extends StatefulWidget {
-  TableViewPage({required this.tableId, this.tableName, this.areaName});
+  const TableViewPage(
+      {super.key, required this.tableId, this.tableName, this.areaName});
   final num tableId;
   final String? tableName;
   final String? areaName;
@@ -65,23 +51,23 @@ class _TableViewPageState extends State<TableViewPage> {
   ];
   void initState() {
     // TODO: implement initState
-    final _tblDetail = Provider.of<TableDetailModel>(context, listen: false);
-    _tblDetail.fetchProductsByTable(widget.tableId);
+    final tblDetail = Provider.of<TableDetailModel>(context, listen: false);
+    tblDetail.fetchProductsByTable(widget.tableId);
 
     super.initState();
     listenForTables();
-    final _tbl = Provider.of<TableModel>(context, listen: false);
-    _tbl.fetchTables();
-    final _area = Provider.of<AreaModel>(context, listen: false);
-    _area.fetchAreas();
-    final _allTable = Provider.of<AppAPI>(context, listen: false);
-    _allTable.getAllTablesByArea(0);
+    final tbl = Provider.of<TableModel>(context, listen: false);
+    tbl.fetchTables();
+    final area = Provider.of<AreaModel>(context, listen: false);
+    area.fetchAreas();
+    final allTable = Provider.of<AppAPI>(context, listen: false);
+    allTable.getAllTablesByArea(0);
   }
 
   void listenForTables() async {
     try {
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      var userData = _prefs.getString("user_data") ?? "";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userData = prefs.getString("user_data") ?? "";
       if (userData != "") {
         Map<String, dynamic> data = jsonDecode(userData);
         companyId = (data['companyId']);
@@ -103,20 +89,20 @@ class _TableViewPageState extends State<TableViewPage> {
     //final _product = Provider.of<ProductModel>(context);
     print(companyId);
     var width = MediaQuery.of(context).size.width;
-    final _tblDetail = Provider.of<TableDetailModel>(context);
+    final tblDetail = Provider.of<TableDetailModel>(context);
 
     return Scaffold(
         key: _scaffoldKey,
         //resizeToAvoidBottomPadding: false,
-        appBar: new AppBar(
-          leading: new IconButton(
-              icon: new Icon(Icons.arrow_back),
+        appBar: AppBar(
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.of(context).pushNamed('/table');
               }),
           centerTitle: true,
           title: Text(
-            _tblDetail.getTableName.toString(),
+            tblDetail.getTableName.toString(),
             textAlign: TextAlign.center,
           ),
           actions: <Widget>[
@@ -150,11 +136,11 @@ class _TableViewPageState extends State<TableViewPage> {
                   ],
                   onChanged: (value) {
                     MenuItems.onChanged(context, value as MenuItem,
-                        widget.tableId, _tblDetail.productList);
+                        widget.tableId, tblDetail.productList);
                     // MenuItems.onChanged(context, value as MenuItem,
                     //     widget.tableId, _tblDetail.productList);
-                    MenuItems.onChanged(context, value as MenuItem,
-                        widget.tableId, _tblDetail.getTableName.toString());
+                    MenuItems.onChanged(context, value, widget.tableId,
+                        tblDetail.getTableName.toString());
                   },
                   dropdownStyleData: DropdownStyleData(
                     width: 160,
@@ -264,18 +250,18 @@ class _TableViewPageState extends State<TableViewPage> {
         //       ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         //floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: (_tblDetail.productList != null &&
-                _tblDetail.productList.length > 0)
+        bottomNavigationBar: (tblDetail.productList != null &&
+                tblDetail.productList.isNotEmpty)
             ? BottomAppBar(
                 color: Colors.lightBlueAccent,
-                child: new Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      margin: EdgeInsets.all(12),
-                      child: new InkResponse(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      margin: const EdgeInsets.all(12),
+                      child: InkResponse(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -286,33 +272,32 @@ class _TableViewPageState extends State<TableViewPage> {
                             ),
                           );
                         },
-                        child: new Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.grey,
-                                primary: Colors.white,
+                                foregroundColor: Colors.white,
                               ),
                               onPressed: () {
                                 print('aaaaa');
                                 showPreAlert(context, widget.tableId,
-                                    _tblDetail.productList);
+                                    tblDetail.productList);
                                 // this.onChanged(context, value as MenuItem,
                                 //     widget.tableId, _tblDetail.productList);
                               },
-                              child: Text('Xem tạm tính'),
+                              child: const Text('Xem tạm tính'),
                             ),
                           ],
                         ),
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      margin: EdgeInsets.all(12),
-                      child: new InkResponse(
-
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      margin: const EdgeInsets.all(12),
+                      child: InkResponse(
                         onTap: () {
                           Navigator.push(
                               context,
@@ -320,12 +305,12 @@ class _TableViewPageState extends State<TableViewPage> {
                                   builder: (content) => PrintPage(
                                       tableId: widget.tableId,
                                       tableName:
-                                          _tblDetail.getTableName.toString(),
+                                          tblDetail.getTableName.toString(),
                                       areaName:
-                                          _tblDetail.getAreaName.toString(),
+                                          tblDetail.getAreaName.toString(),
                                       companyId: companyId)));
                         },
-                        child: new Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
@@ -338,17 +323,17 @@ class _TableViewPageState extends State<TableViewPage> {
                                 print('thanh toán');
                                 // this.onChanged(context, value as MenuI
                               },
-                              child: Text('Thanh toán'),
+                              child: const Text('Thanh toán'),
                             ),
                           ],
                         ),
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      margin: EdgeInsets.all(12),
-                      child: new InkResponse(
-                        child: new Row(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      margin: const EdgeInsets.all(12),
+                      child: InkResponse(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
@@ -356,13 +341,13 @@ class _TableViewPageState extends State<TableViewPage> {
                               style: TextButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 0, 140, 255),
-                                primary: Colors.white,
+                                foregroundColor: Colors.white,
                               ),
                               onPressed: () {
                                 print('thông báo');
                                 // this.onChanged(context, value as MenuI
                               },
-                              child: Text('Thông báo'),
+                              child: const Text('Thông báo'),
                             ),
                           ],
                         ),
@@ -486,14 +471,14 @@ class _TableViewPageState extends State<TableViewPage> {
               )
             : BottomAppBar(
                 color: Colors.lightBlueAccent,
-                child: new Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      margin: EdgeInsets.all(12),
-                      child: new InkResponse(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      margin: const EdgeInsets.all(12),
+                      child: InkResponse(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -504,17 +489,17 @@ class _TableViewPageState extends State<TableViewPage> {
                             ),
                           );
                         },
-                        child: new Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            new Icon(
+                            Icon(
                               Icons.library_add,
                               color: Color(0xFFFFFFFF),
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 5),
-                              child: new Text(
+                              child: Text(
                                 'Gọi món',
                                 style: TextStyle(color: Color(0xFFFFFFFF)),
                               ),
@@ -523,17 +508,17 @@ class _TableViewPageState extends State<TableViewPage> {
                         ),
                       ),
                     ),
-                    _tblDetail.tableStatus == 0
+                    tblDetail.tableStatus == 0
                         ? Container(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            margin: EdgeInsets.all(12),
-                            child: new InkResponse(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            margin: const EdgeInsets.all(12),
+                            child: InkResponse(
                               onTap: () {
-                                _tblDetail
+                                tblDetail
                                     .bookTable(widget.tableId)
                                     .then((result) {
                                   if (result) {
-                                    final snackBar = SnackBar(
+                                    const snackBar = SnackBar(
                                       duration: Duration(seconds: 2),
                                       content: Row(
                                         children: <Widget>[
@@ -546,7 +531,7 @@ class _TableViewPageState extends State<TableViewPage> {
                                         .showSnackBar(snackBar);
                                     Navigator.of(context)
                                         .pushReplacementNamed('/table');
-                                  } else
+                                  } else {
                                     // showAlertPopup(context, 'Thông báo',
                                     //     'Lỗi, vui lòng thử lại sau');
                                     Fluttertoast.showToast(
@@ -557,19 +542,20 @@ class _TableViewPageState extends State<TableViewPage> {
                                         backgroundColor: Colors.red,
                                         textColor: Colors.white,
                                         fontSize: 16.0);
+                                  }
                                 });
                               },
-                              child: new Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  new Icon(
+                                  Icon(
                                     Icons.library_add,
                                     color: Color(0xFFFFFFFF),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
-                                    child: new Text(
+                                    child: Text(
                                       'Đặt bàn',
                                       style:
                                           TextStyle(color: Color(0xFFFFFFFF)),
@@ -579,17 +565,18 @@ class _TableViewPageState extends State<TableViewPage> {
                               ),
                             ),
                           )
-                        : _tblDetail.tableStatus == 2
+                        : tblDetail.tableStatus == 2
                             ? Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                margin: EdgeInsets.all(12),
-                                child: new InkResponse(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                margin: const EdgeInsets.all(12),
+                                child: InkResponse(
                                   onTap: () {
-                                    _tblDetail
+                                    tblDetail
                                         .removeBookTable(widget.tableId)
                                         .then((result) {
                                       if (result) {
-                                        final snackbar = SnackBar(
+                                        const snackbar = SnackBar(
                                           duration: Duration(seconds: 2),
                                           content: Row(
                                             children: <Widget>[
@@ -602,7 +589,7 @@ class _TableViewPageState extends State<TableViewPage> {
                                             .showSnackBar(snackbar);
                                         Navigator.of(context)
                                             .pushReplacementNamed('/table');
-                                      } else
+                                      } else {
                                         Fluttertoast.showToast(
                                             msg: "Lỗi, vui lòng thử lại sau",
                                             toastLength: Toast.LENGTH_SHORT,
@@ -611,19 +598,20 @@ class _TableViewPageState extends State<TableViewPage> {
                                             backgroundColor: Colors.red,
                                             textColor: Colors.white,
                                             fontSize: 16.0);
+                                      }
                                     });
                                   },
-                                  child: new Row(
+                                  child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      new Icon(
+                                      Icon(
                                         Icons.library_add,
                                         color: Color(0xFFFFFFFF),
                                       ),
                                       Padding(
                                         padding: EdgeInsets.only(left: 5),
-                                        child: new Text(
+                                        child: Text(
                                           'Hủy đặt bàn',
                                           style: TextStyle(
                                               color: Color(0xFFFFFFFF)),
@@ -639,11 +627,11 @@ class _TableViewPageState extends State<TableViewPage> {
                   ],
                 ),
               ),
-        body: _renderBody(_tblDetail.tableStatus));
+        body: _renderBody(tblDetail.tableStatus));
   }
 
   Widget _renderBody(num status) {
-    final _tblDetail = Provider.of<TableDetailModel>(context);
+    final tblDetail = Provider.of<TableDetailModel>(context);
     if (status == 0 || status == 2) {
       return SingleChildScrollView(
         child: Center(
@@ -652,9 +640,11 @@ class _TableViewPageState extends State<TableViewPage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  title: status == 0 ? Text('Bàn trống') : Text('Bàn đặt'),
+                  title: status == 0
+                      ? const Text('Bàn trống')
+                      : const Text('Bàn đặt'),
                 ),
-                ButtonBar(
+                const ButtonBar(
                   alignment: MainAxisAlignment.start,
                   children: <Widget>[
                     // FlatButton(
@@ -679,23 +669,23 @@ class _TableViewPageState extends State<TableViewPage> {
       );
     } else {
       // active table
-      if (_tblDetail.productList != null) {
+      if (tblDetail.productList != null) {
         return SingleChildScrollView(
             child: Column(
                 verticalDirection: VerticalDirection.down,
-                children: _tblDetail.productList.map((i) {
+                children: tblDetail.productList.map((i) {
                   return GestureDetector(
                       onTap: () {
                         //showAlertDialog(context, widget.tableId, i.id);
-                        showDataAlert(_tblDetail, context, widget.tableId, i,
+                        showDataAlert(tblDetail, context, widget.tableId, i,
                             i.qty, i.price);
                         // print('_tblDetail.productList');
                         // print(_tblDetail.productList);
                       },
-                      child: new Container(
-                        padding: EdgeInsets.all(6),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
                         //margin: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           border: Border(
                             //top: BorderSide(width: 16.0, color: Colors.lightBlue.shade50),
                             bottom:
@@ -708,7 +698,8 @@ class _TableViewPageState extends State<TableViewPage> {
                               i.productName.toString().toLowerCase())),
                           trailing: Text(
                             " X " + i.qty.toString(),
-                            style: TextStyle(fontSize: 14, color: Colors.red),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.red),
                           ),
                           subtitle: Row(
                             //alignment: Alignment.center,
@@ -720,8 +711,8 @@ class _TableViewPageState extends State<TableViewPage> {
                               // ),
                               Text(
                                 showPriceText(i.price),
-                                style:
-                                    TextStyle(fontSize: 14, color: Colors.red),
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.red),
                               ),
                             ],
                           ),
@@ -729,7 +720,7 @@ class _TableViewPageState extends State<TableViewPage> {
                       ));
                 }).toList()));
       }
-      return SingleChildScrollView(
+      return const SingleChildScrollView(
         child: Center(
           child: Card(
             //color: Colors.blue,
@@ -778,31 +769,31 @@ class _TableViewPageState extends State<TableViewPage> {
     }
   }
 
-  showDataAlert(_tblDetail, BuildContext context, num tableId, Product product,
+  showDataAlert(tblDetail, BuildContext context, num tableId, Product product,
       num qty, num price) {
-    TextEditingController _controller = TextEditingController();
-    TextEditingController _noteController = TextEditingController();
+    TextEditingController controller = TextEditingController();
+    TextEditingController noteController = TextEditingController();
     double width = MediaQuery.of(context).size.width;
-    _controller.text = qty.toString();
-    _noteController.text = product.note.toString();
+    controller.text = qty.toString();
+    noteController.text = product.note.toString();
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            insetPadding: EdgeInsets.all(40),
-            shape: RoundedRectangleBorder(
+            insetPadding: const EdgeInsets.all(40),
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(
                   20.0,
                 ),
               ),
             ),
-            contentPadding: EdgeInsets.only(
+            contentPadding: const EdgeInsets.only(
               top: 10.0,
             ),
             title: Text(
               product.productName.toString(),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24.0,
               ),
               textAlign: TextAlign.center,
@@ -821,7 +812,7 @@ class _TableViewPageState extends State<TableViewPage> {
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
                         "Giá: " + showPriceText(price),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16.0,
                         ),
                       ),
@@ -835,11 +826,11 @@ class _TableViewPageState extends State<TableViewPage> {
                             flex: 2, // 60%
                             child: GestureDetector(
                               child: Container(
-                                padding: EdgeInsets.all(2),
-                                decoration: ShapeDecoration(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const ShapeDecoration(
                                     shape: CircleBorder(),
                                     color: Color.fromARGB(255, 233, 71, 39)),
-                                child: Padding(
+                                child: const Padding(
                                   padding: EdgeInsets.only(
                                       left: 2,
                                       bottom: 4,
@@ -855,13 +846,13 @@ class _TableViewPageState extends State<TableViewPage> {
                               ),
                               onTap: () {
                                 int currentValue =
-                                    int.tryParse(_controller.text) ?? 0;
-                                _controller.text = (currentValue > 0)
+                                    int.tryParse(controller.text) ?? 0;
+                                controller.text = (currentValue > 0)
                                     ? "${currentValue - 1}"
                                     : "0";
 
-                                _controller.text = _controller.text != '0'
-                                    ? _controller.text
+                                controller.text = controller.text != '0'
+                                    ? controller.text
                                     : "1";
                               },
                             ),
@@ -869,13 +860,14 @@ class _TableViewPageState extends State<TableViewPage> {
                           Expanded(
                             flex: 6,
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               width: 160,
                               child: TextField(
-                                controller: _controller,
+                                controller: controller,
                                 maxLength: 4,
                                 textAlign: TextAlign.center,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   hintText: "0",
                                   border: InputBorder.none,
                                   counterText: "",
@@ -888,11 +880,11 @@ class _TableViewPageState extends State<TableViewPage> {
                             flex: 2, // 20%
                             child: GestureDetector(
                               child: Container(
-                                padding: EdgeInsets.all(2),
-                                decoration: ShapeDecoration(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const ShapeDecoration(
                                     shape: CircleBorder(),
                                     color: Color.fromARGB(255, 37, 20, 196)),
-                                child: Padding(
+                                child: const Padding(
                                   padding: EdgeInsets.only(
                                       left: 2,
                                       bottom: 4,
@@ -906,8 +898,8 @@ class _TableViewPageState extends State<TableViewPage> {
                               ),
                               onTap: () {
                                 int currentValue =
-                                    int.tryParse(_controller.text) ?? 0;
-                                _controller.text = "${currentValue + 1}";
+                                    int.tryParse(controller.text) ?? 0;
+                                controller.text = "${currentValue + 1}";
                               },
                             ),
                           )
@@ -919,7 +911,7 @@ class _TableViewPageState extends State<TableViewPage> {
                     ),
                     Container(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Ghi chú'),
+                      child: const Text('Ghi chú'),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -928,9 +920,9 @@ class _TableViewPageState extends State<TableViewPage> {
                         //   FilteringTextInputFormatter.allow(
                         //       RegExp(r'^(?!.*\*[*#]|\d*#$)[*\d]*#?$')),
                         // ],
-                        controller: _noteController,
+                        controller: noteController,
 
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Ghi chú ở đây',
                             labelText: 'Ghi chú'),
@@ -949,8 +941,8 @@ class _TableViewPageState extends State<TableViewPage> {
                               primary: Colors.red,
                               // fixedSize: Size(250, 50),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Text(
                                 "Xóa món",
                               ),
@@ -972,20 +964,20 @@ class _TableViewPageState extends State<TableViewPage> {
                               primary: Colors.black,
                               // fixedSize: Size(250, 50),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Text(
                                 "Cập nhật",
                               ),
                             ),
                             onPressed: () {
-                              _tblDetail
+                              tblDetail
                                   .updateTable(
                                       tableId,
                                       product.id,
-                                      num.parse(_controller.text.toString()),
+                                      num.parse(controller.text.toString()),
                                       price,
-                                      (_noteController.text.toString()))
+                                      (noteController.text.toString()))
                                   .then((result) {
                                 Navigator.pop(context);
                                 if (result) {
@@ -1032,20 +1024,19 @@ class _TableViewPageState extends State<TableViewPage> {
   }
 
   showAlertDialog(BuildContext context, num tableId, num productId) {
-    final _removeProduct =
-        Provider.of<TableDetailModel>(context, listen: false);
+    final removeProduct = Provider.of<TableDetailModel>(context, listen: false);
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("Hủy"),
+      child: const Text("Hủy"),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
         //launchMissile();
       },
     );
     Widget continueButton = TextButton(
-      child: Text("OK"),
+      child: const Text("OK"),
       onPressed: () {
-        final snackbar = SnackBar(
+        const snackbar = SnackBar(
           duration: Duration(seconds: 2),
           content: Row(
             children: <Widget>[
@@ -1055,7 +1046,7 @@ class _TableViewPageState extends State<TableViewPage> {
           ),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
-        _removeProduct.removeProduct(tableId, productId).then((result) {
+        removeProduct.removeProduct(tableId, productId).then((result) {
           if (result) {
             //_scaffoldKey.currentState.hideCurrentSnackBar();
             // showAlertPopup(context, 'Thông báo', 'Xóa món thành công');
@@ -1088,8 +1079,8 @@ class _TableViewPageState extends State<TableViewPage> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Xác nhận"),
-      content: Text("Bạn có chắc chắn muốn xóa ?"),
+      title: const Text("Xác nhận"),
+      content: const Text("Bạn có chắc chắn muốn xóa ?"),
       actions: [
         cancelButton,
         continueButton,
@@ -1117,15 +1108,15 @@ showPreAlert(BuildContext context, tableId, products) {
       context: context,
       builder: (context) {
         return AlertDialog(
-            insetPadding: EdgeInsets.all(20),
-            shape: RoundedRectangleBorder(
+            insetPadding: const EdgeInsets.all(20),
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(
                   5.0,
                 ),
               ),
             ),
-            contentPadding: EdgeInsets.only(
+            contentPadding: const EdgeInsets.only(
               top: 10.0,
             ),
             title: Row(
@@ -1134,8 +1125,8 @@ showPreAlert(BuildContext context, tableId, products) {
                 //Text('Tạm tính'),
                 Text(
                   //'Tổng cộng: ' + ('${formatter.format(total.toInt())}'.replaceAll(',', '.').toString()),
-                  'Tổng cộng: ' + showPriceText(total),
-                  style: TextStyle(
+                  'Tổng cộng: ${showPriceText(total)}',
+                  style: const TextStyle(
                     fontSize: 24.0,
                   ),
                 ),
@@ -1192,7 +1183,7 @@ class MenuItems {
   static const List<MenuItem> secondItems = [logout];
 
   // static const home = MenuItem(text: 'Tạm tính', icon: Icons.table_view);
-  // static const payment = MenuItem(text: 'Thanh toán', icon: Icons.payment);
+  static const payment = MenuItem(text: 'Thanh toán', icon: Icons.payment);
   static const cancel = MenuItem(text: 'Hủy đơn', icon: Icons.cancel);
   static const add = MenuItem(text: 'Gộp bàn', icon: Icons.repeat_one);
   static const move = MenuItem(text: 'Chuyển bàn', icon: Icons.swap_horiz);
@@ -1216,8 +1207,7 @@ class MenuItems {
   }
 
   static onChanged(
-
-      BuildContext context, MenuItem item, num tableId, tableName) {
+      BuildContext context, MenuItem item, num tableId, tableName) async {
     switch (item) {
       case MenuItems.add:
         //Do something
@@ -1260,6 +1250,7 @@ class MenuItems {
               backgroundColor: Colors.red,
               textColor: Colors.white,
               fontSize: 16.0);
+          // ignore: use_build_context_synchronously
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -1278,8 +1269,8 @@ class MenuItems {
         }
         break;
       case MenuItems.payment:
-        final response = await http.get(
-            Uri.parse(apiURLV2 + '/table/checkout?id=' + tableId.toString()));
+        final response =
+            await http.get(Uri.parse('$apiURLV2/table/checkout?id=$tableId'));
         print(Uri.parse(apiURLV2 + '/table/checkout?id=' + tableId.toString()));
         bool list = json.decode(response.body)['status'];
         if (list) {
@@ -1291,6 +1282,7 @@ class MenuItems {
               backgroundColor: Colors.red,
               textColor: Colors.white,
               fontSize: 16.0);
+          // ignore: use_build_context_synchronously
           Navigator.push(
             context,
             MaterialPageRoute(
